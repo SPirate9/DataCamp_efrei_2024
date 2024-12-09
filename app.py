@@ -1,6 +1,12 @@
 import praw
 import pandas as pd
 import streamlit as st
+from supabase import create_client, Client
+
+# Connexion à Supabase
+url = "https://uxylpimtlwyonwartkrn.supabase.co"  # Remplace avec ton URL Supabase
+key = "YeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4eWxwaW10bHd5b253YXJ0a3JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM3NzQ3OTcsImV4cCI6MjA0OTM1MDc5N30.qrOkhFljAqhioQ5bM6gSn-XZQu78IE6KrzhzlrZU4fU"  # Remplace avec ta clé Supabase
+supabase: Client = create_client(url, key)
 
 # Connexion à Reddit via l'API
 reddit = praw.Reddit(client_id='g4Qn1BhPN4eXIZxhs302gQ',
@@ -34,13 +40,28 @@ def get_comments_from_post(post_url):
     return comments
 
 # Récupérer les commentaires pour chaque URL
+def insert_comments_into_supabase(comments):
+    for comment in comments:
+        data = {
+            'author': comment['author'],
+            'score': comment['score'],
+            'body': comment['body']
+        }
+        # Insert dans la table "comments" de Supabase
+        supabase.table('comments').insert(data).execute()
+
+# Fonction pour récupérer les commentaires stockés depuis Supabase
+def fetch_comments_from_supabase():
+    response = supabase.table('comments').select('*').execute()
+    return response.data
+
+# Récupérer les commentaires pour chaque URL
 def fetch_reddit_data():
     all_comments = []
     for url in post_urls:
         comments = get_comments_from_post(url)
         all_comments.extend(comments)
-        print(f"Commentaires récupérés pour {url}: {len(comments)}")
-    return pd.DataFrame(all_comments)
+    return all_comments
 
 # Application principale
 st.title("Analyse Multi-Plateformes")
@@ -52,10 +73,19 @@ tabs = st.tabs(["Reddit", "Google Play & Apple Store", "Dashboard Power BI", "Ex
 with tabs[0]:
     st.header("Commentaires Reddit")
     st.write("Données extraites des discussions Reddit sur Pokémon TCG Pocket.")
-    
-    df_comments = fetch_reddit_data()
-    st.write("Aperçu des commentaires :", df_comments.head())
-    
+
+    # Vérifier si les commentaires sont déjà dans Supabase
+    comments_from_db = fetch_comments_from_supabase()
+    if comments_from_db:
+        df_comments = pd.DataFrame(comments_from_db)
+        st.write("Commentaires récupérés depuis Supabase :", df_comments.head())
+    else:
+        st.write("Aucun commentaire trouvé dans la base de données. Récupération depuis Reddit...")
+        comments = fetch_reddit_data()
+        insert_comments_into_supabase(comments)
+        df_comments = pd.DataFrame(comments)
+        st.write("Commentaires récupérés et insérés dans Supabase :", df_comments.head())
+
     score_filter = st.slider("Filtrer par score", min_value=min(df_comments["score"]), 
                               max_value=max(df_comments["score"]), value=3)
     filtered_data = df_comments[df_comments["score"] >= score_filter]
