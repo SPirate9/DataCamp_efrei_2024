@@ -1,3 +1,4 @@
+supabase-py
 praw
 pandas
 streamlit
