@@ -2,7 +2,6 @@ import praw
 import pandas as pd
 import streamlit as st
 
-
 # Connexion à Reddit via l'API
 reddit = praw.Reddit(client_id='g4Qn1BhPN4eXIZxhs302gQ',
                      client_secret='-Qu81qyQb_x2r2OGi9bYoEEP3u2g_g',
@@ -35,20 +34,55 @@ def get_comments_from_post(post_url):
     return comments
 
 # Récupérer les commentaires pour chaque URL
-all_comments = []
-for url in post_urls:
-    comments = get_comments_from_post(url)
-    all_comments.extend(comments)
-    print(f"Commentaires récupérés pour {url}: {len(comments)}")
+def fetch_reddit_data():
+    all_comments = []
+    for url in post_urls:
+        comments = get_comments_from_post(url)
+        all_comments.extend(comments)
+        print(f"Commentaires récupérés pour {url}: {len(comments)}")
+    return pd.DataFrame(all_comments)
 
-# Créer un DataFrame avec les données
-df_comments = pd.DataFrame(all_comments)
+# Application principale
+st.title("Analyse Multi-Plateformes")
 
-st.title('Commentaires Reddit sur Pokémon TCG Pocket')
-st.write(df_comments.head())
-score_filter = st.slider('Filtrer par score', min_value=1, max_value=5, value=3)
-filtered_data = df_comments[df_comments['score'] >= score_filter]
-st.write(filtered_data)
-st.subheader('Graphique des scores')
-st.bar_chart(filtered_data['score'].value_counts())
+# Onglets
+tabs = st.tabs(["Reddit", "Google Play & Apple Store", "Dashboard Power BI", "Explications"])
 
+# Onglet 1 : Reddit
+with tabs[0]:
+    st.header("Commentaires Reddit")
+    st.write("Données extraites des discussions Reddit sur Pokémon TCG Pocket.")
+    
+    df_comments = fetch_reddit_data()
+    st.write("Aperçu des commentaires :", df_comments.head())
+    
+    score_filter = st.slider("Filtrer par score", min_value=min(df_comments["score"]), 
+                              max_value=max(df_comments["score"]), value=3)
+    filtered_data = df_comments[df_comments["score"] >= score_filter]
+    st.write("Commentaires filtrés :", filtered_data)
+    st.bar_chart(filtered_data["score"].value_counts())
+
+# Onglet 2 : Google Play & Apple Store
+with tabs[1]:
+    st.header("Analyse des Stores")
+    st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store (données à intégrer).")
+    # Exemple de placeholder :
+    st.write("Travaux en cours...")
+
+# Onglet 3 : Dashboard Power BI
+with tabs[2]:
+    st.header("Dashboard Power BI")
+    st.write("Visualisez ici un tableau de bord Power BI intégré.")
+    # Vous pouvez intégrer un lien ou une iframe Power BI ici.
+    st.write("Travaux en cours...")
+
+# Onglet 4 : Explications
+with tabs[3]:
+    st.header("Explications")
+    st.write("""
+    Ce projet vise à analyser les commentaires des utilisateurs sur plusieurs plateformes :
+    - **Reddit :** pour collecter des commentaires et votes d'utilisateurs passionnés.
+    - **Google Play & Apple Store :** pour analyser les avis sur les applications mobiles.
+    - **Power BI :** pour regrouper et visualiser les données de manière interactive.
+    """)
+    st.write("Les données ont été extraites à l'aide de Python et visualisées avec Streamlit.")
