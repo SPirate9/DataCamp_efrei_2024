@@ -49,7 +49,7 @@ def fetch_reddit_data():
 st.title("Analyse Multi-Plateformes")
 
 # Onglets
-tabs = st.tabs(["Reddit", "Google Play & Apple Store", "Dashboard Power BI", "Explications"])
+tabs = st.tabs(["Reddit", "Google Play & Apple Store", "Dashboard Power BI", "Explications", "YouTube Test"])
 
 # Onglet 1 : Reddit
 with tabs[0]:
