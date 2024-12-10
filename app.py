@@ -219,44 +219,59 @@ with tabs[5]:  # Onglet "Analyse de Sentiment"
             st.write(f"**Note sur 5 :** {note}")
     
     elif option == "Charger un fichier CSV":
-        # Zone pour télécharger le fichier CSV
+    # Zone pour télécharger le fichier CSV
         uploaded_file = st.file_uploader("Téléchargez un fichier CSV", type=["csv"])
 
         if uploaded_file is not None:
             try:
-                # Charger le fichier CSV
+            # Charger le fichier CSV
                 df = pd.read_csv(uploaded_file)
-                st.write("Aperçu du fichier chargé :")
-                st.dataframe(df)
 
-                # L'utilisateur sélectionne la colonne des commentaires
+            # Afficher un aperçu limité du fichier chargé
+                st.write("Aperçu des 10 premières lignes du fichier chargé :")
+                st.dataframe(df.head(10))  # Afficher uniquement les 10 premières lignes
+
+            # Étape 1 : Sélection de la colonne contenant les commentaires
                 columns = df.columns.tolist()
-                selected_column = st.selectbox("Sélectionnez la colonne contenant les commentaires :", columns)
+                selected_column = st.selectbox("Étape 1 : Sélectionnez la colonne contenant les commentaires :", columns)
 
-                if selected_column:
+            # Étape 2 : Confirmation de la colonne choisie
+                if st.button("Confirmer la colonne sélectionnée"):
+                    if selected_column:
+                        st.write(f"Analyse de la colonne confirmée : **{selected_column}**")
+                        comments = df[selected_column].astype(str)  # Convertir en chaînes de caractères si nécessaire
+
                     # Appliquer l'analyse de sentiment à chaque commentaire
-                    st.write(f"Analyse de la colonne : {selected_column}")
-                    comments = df[selected_column].astype(str)  # Convertir en chaînes de caractères si nécessaire
-                    results = []
+                        results = []
+                        progress_bar = st.progress(0)  # Ajouter une barre de progression
 
-                    for comment in comments:
-                        sentiment, score, note = analyze_sentiment(comment)
-                        sentiment_label = ["Négatif", "Neutre", "Positif"][sentiment]
-                        results.append({"Commentaire": comment, "Sentiment": sentiment_label, "Score de confiance": score, "Note sur 5": note})
+                        for idx, comment in enumerate(comments):
+                            sentiment, score, note = analyze_sentiment(comment)
+                            sentiment_label = ["Négatif", "Neutre", "Positif"][sentiment]
+                            results.append({
+                                "Commentaire": comment,
+                                "Sentiment": sentiment_label,
+                                "Score de confiance": score,
+                                "Note sur 5": note
+                            })
+                        # Mettre à jour la barre de progression
+                            progress_bar.progress((idx + 1) / len(comments))
 
                     # Convertir les résultats en DataFrame
-                    results_df = pd.DataFrame(results)
+                        results_df = pd.DataFrame(results)
 
                     # Afficher les résultats sous forme de tableau interactif
-                    st.subheader("Tableau des Commentaires avec Analyse de Sentiment")
-                    st.dataframe(results_df)
+                        st.subheader("Tableau des Commentaires avec Analyse de Sentiment")
+                        st.dataframe(results_df)
 
                     # Option de téléchargement du fichier CSV mis à jour
-                    st.download_button(
-                        label="Télécharger le fichier avec l'analyse de sentiment",
-                        data=results_df.to_csv(index=False).encode('utf-8'),
-                        file_name="commentaires_avec_analyse.csv",
-                        mime="text/csv"
-                    )
+                        st.download_button(
+                            label="Télécharger le fichier avec l'analyse de sentiment",
+                            data=results_df.to_csv(index=False).encode('utf-8'),
+                            file_name="commentaires_avec_analyse.csv",
+                            mime="text/csv"
+                        )
+                    else:
+                        st.error("Veuillez sélectionner une colonne avant de confirmer.")
             except Exception as e:
                 st.error(f"Erreur lors du chargement ou de l'analyse du fichier CSV : {e}")
