@@ -8,7 +8,6 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch 
 import matplotlib.pyplot as plt
 import seaborn as sns
-from wordcloud import WordCloud
 import plotly.graph_objects as go
 
 # Connexion à Reddit via l'API
@@ -64,13 +63,14 @@ with tabs[0]:
     st.write("Données extraites des discussions Reddit sur Pokémon TCG Pocket.")
     
     df_comments = fetch_reddit_data()
-    st.write("Aperçu des commentaires :", df_comments.head())
     
-    score_filter = st.slider("Filtrer par score", min_value=min(df_comments["score"]), 
-                              max_value=max(df_comments["score"]), value=3)
+    score_filter = st.slider("Filtrer par score", min_value=int(df_comments["score"].min()), 
+                              max_value=int(df_comments["score"].max()), value=3)
     filtered_data = df_comments[df_comments["score"] >= score_filter]
-    st.write("Commentaires filtrés :", filtered_data)
-    st.bar_chart(filtered_data["score"].value_counts())
+    
+    # Affichage des commentaires filtrés
+    st.write(f"Nombre de commentaires filtrés (score >= {score_filter}):", len(filtered_data))
+    st.write(filtered_data[['score', 'body']])
 
 # Onglet 2 : Google Play & Apple Store
 with tabs[1]:
