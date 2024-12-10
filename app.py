@@ -6,6 +6,9 @@ import html
 import re
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch 
+import matplotlib.pyplot as plt
+import seaborn as sns
+from wordcloud import WordCloud
 
 # Connexion à Reddit via l'API
 reddit = praw.Reddit(client_id='g4Qn1BhPN4eXIZxhs302gQ',
@@ -95,11 +98,6 @@ with tabs[3]:
 
 api_key = "AIzaSyAUnpA_084X_LrgZP_bDIe-m6XzD6GW08g"
 youtube = build("youtube", "v3", developerKey=api_key)
-
-model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForSequenceClassification.from_pretrained(model_name)
-
 
 with tabs[4]:
     st.header("YouTube Test")
@@ -219,31 +217,24 @@ with tabs[5]:  # Onglet "Analyse de Sentiment"
             st.write(f"**Note sur 5 :** {note}")
     
     elif option == "Charger un fichier CSV":
-    # Zone pour télécharger le fichier CSV
         uploaded_file = st.file_uploader("Téléchargez un fichier CSV", type=["csv"])
 
         if uploaded_file is not None:
             try:
-            # Charger le fichier CSV
                 df = pd.read_csv(uploaded_file)
-
-            # Afficher un aperçu limité du fichier chargé
                 st.write("Aperçu des 10 premières lignes du fichier chargé :")
-                st.dataframe(df.head(10))  # Afficher uniquement les 10 premières lignes
+                st.dataframe(df.head(10))
 
-            # Étape 1 : Sélection de la colonne contenant les commentaires
                 columns = df.columns.tolist()
                 selected_column = st.selectbox("Étape 1 : Sélectionnez la colonne contenant les commentaires :", columns)
 
-            # Étape 2 : Confirmation de la colonne choisie
                 if st.button("Confirmer la colonne sélectionnée"):
                     if selected_column:
                         st.write(f"Analyse de la colonne confirmée : **{selected_column}**")
-                        comments = df[selected_column].astype(str)  # Convertir en chaînes de caractères si nécessaire
+                        comments = df[selected_column].astype(str)
 
-                    # Appliquer l'analyse de sentiment à chaque commentaire
                         results = []
-                        progress_bar = st.progress(0)  # Ajouter une barre de progression
+                        progress_bar = st.progress(0)
 
                         for idx, comment in enumerate(comments):
                             sentiment, score, note = analyze_sentiment(comment)
@@ -254,23 +245,45 @@ with tabs[5]:  # Onglet "Analyse de Sentiment"
                                 "Score de confiance": score,
                                 "Note sur 5": note
                             })
-                        # Mettre à jour la barre de progression
                             progress_bar.progress((idx + 1) / len(comments))
 
-                    # Convertir les résultats en DataFrame
                         results_df = pd.DataFrame(results)
 
-                    # Afficher les résultats sous forme de tableau interactif
                         st.subheader("Tableau des Commentaires avec Analyse de Sentiment")
                         st.dataframe(results_df)
 
-                    # Option de téléchargement du fichier CSV mis à jour
                         st.download_button(
                             label="Télécharger le fichier avec l'analyse de sentiment",
                             data=results_df.to_csv(index=False).encode('utf-8'),
                             file_name="commentaires_avec_analyse.csv",
                             mime="text/csv"
                         )
+
+                        # Étape 3 : Dataviz
+                        st.subheader("Visualisation des Résultats")
+
+                        # Moyenne des notes
+                        avg_note = results_df['Note sur 5'].mean()
+                        st.metric(label="Note Moyenne", value=f"{avg_note:.2f}")
+
+                        # Répartition des sentiments
+                        st.write("Répartition des Sentiments")
+                        sentiment_counts = results_df['Sentiment'].value_counts()
+                        fig, ax = plt.subplots()
+                        sentiment_counts.plot(kind='pie', autopct='%1.1f%%', colors=['red', 'gray', 'green'], ax=ax)
+                        ax.set_ylabel("")  # Supprimer le label pour un affichage propre
+                        ax.set_title("Répartition des Sentiments")
+                        st.pyplot(fig)
+
+                        # Nuage de mots des commentaires
+                        st.write("Nuage de Mots des Commentaires")
+                        all_comments = " ".join(results_df['Commentaire'].tolist())
+                        wordcloud = WordCloud(width=800, height=400, background_color="white").generate(all_comments)
+                        fig, ax = plt.subplots(figsize=(10, 5))
+                        ax.imshow(wordcloud, interpolation='bilinear')
+                        ax.axis("off")  # Supprimer les axes
+                        st.pyplot(fig)
+
                     else:
                         st.error("Veuillez sélectionner une colonne avant de confirmer.")
             except Exception as e:
