@@ -101,43 +101,39 @@ with tabs[3]:
 youtube = build("youtube", "v3", developerKey="AIzaSyAUnpA_084X_LrgZP_bDIe-m6XzD6GW08g")
 video_id = "16duP6ga_Q8"
 
+# Fonction pour nettoyer les commentaires
+def clean_comment(text):
+    text = html.unescape(text)  # Décoder les entités HTML (par exemple, &#39; -> ')
+    text = re.sub(r"<.*?>", "", text)  # Supprimer les balises HTML
+    text = re.sub(r"\d+:\d+", "", text)  # Supprimer les horodatages (par exemple, 1:37)
+    text = re.sub(r"\s+", " ", text)  # Réduire les espaces multiples
+    return text.strip()
+
 # Fonction pour récupérer les commentaires
 def fetch_comments(video_id):
-    comments = []
-    request = youtube.commentThreads().list(
-        part="snippet",
-        videoId=video_id,
-        maxResults= 500
-    )
+    request = youtube.commentThreads().list(part="snippet", videoId=video_id, maxResults=500)
     response = request.execute()
 
+    comments = []
     for item in response["items"]:
         comment = item["snippet"]["topLevelComment"]["snippet"]
+        cleaned_comment = clean_comment(comment["textDisplay"])  # Nettoyer le commentaire
         comments.append({
-            "Commentaire": comment["textDisplay"],
+            "Commentaire": cleaned_comment,
             "Likes": comment["likeCount"]
         })
-
     return comments
 
-# Extraction des commentaires
+# Extraction et affichage des commentaires
 with tabs[4]:
     st.header("Commentaires YouTube")
-    st.write("""
-    Analyse des commentaires de la vidéo YouTube sur Pokémon TCG Pocket.
-    """)
-
+    st.write("Analyse des commentaires de la vidéo YouTube sur Pokémon TCG Pocket.")
+    
     try:
-        # Extraction des commentaires
-        all_comments = fetch_comments(video_id)
-
-        # Création du DataFrame
-        comments_df = pd.DataFrame(all_comments)
-
-        # Affichage des résultats
+        comments_df = pd.DataFrame(fetch_comments(video_id))
         if not comments_df.empty:
             st.write(f"Commentaires extraits : {len(comments_df)}")
-            st.dataframe(comments_df)  # Afficher sous forme de tableau interactif
+            st.dataframe(comments_df)
         else:
             st.write("Aucun commentaire trouvé.")
     except Exception as e:
