@@ -114,7 +114,7 @@ with tabs[3]:
     st.write("""
     Ce projet vise à analyser les commentaires des utilisateurs sur plusieurs plateformes :
     - **Reddit :** Collecte des commentaires et votes d'utilisateurs passionnés autour de Pokémon TCG Pocket.
-    - **Google Play & Apple Store :** Analyse des avis laissés par les utilisateurs des applications mobiles.
+    - **Google Play & Appl Store :** Analyse des avis laissés par les utilisateurs des applications mobiles.
     - **Power BI :** Un tableau de bord interactif pour regrouper et visualiser les données de manière dynamique.
     - **YouTube :** Extraction et analyse des commentaires des vidéos YouTube sur Pokémon TCG Pocket.
     - **Analyse de Sentiment :** Un onglet dédié à l'analyse de sentiment où vous pouvez soit saisir un texte pour analyse, soit télécharger un fichier CSV pour obtenir une analyse sur l'ensemble des commentaires présents dans ce fichier.
