@@ -2,6 +2,8 @@ import praw
 import pandas as pd
 import streamlit as st
 from googleapiclient.discovery import build
+import html
+import re
 
 # Connexion à Reddit via l'API
 reddit = praw.Reddit(client_id='g4Qn1BhPN4eXIZxhs302gQ',
@@ -90,6 +92,9 @@ with tabs[3]:
     """)
     st.write("Les données ont été extraites à l'aide de Python et visualisées avec Streamlit.")
 
+import html
+import re
+
 api_key = "AIzaSyAUnpA_084X_LrgZP_bDIe-m6XzD6GW08g"
 youtube = build("youtube", "v3", developerKey=api_key)
 
@@ -136,10 +141,22 @@ with tabs[4]:
 
         return comments
 
+    # Fonction pour nettoyer les commentaires
+    def clean_comment(text):
+        text = html.unescape(text)  # Décoder les entités HTML (&#39; -> ')
+        text = re.sub(r"<.*?>", "", text)  # Supprimer les balises HTML
+        text = re.sub(r"\d+:\d+", "", text)  # Supprimer les horodatages (1:37)
+        text = re.sub(r"\s+", " ", text)  # Supprimer les espaces multiples
+        return text.strip()  # Supprimer les espaces superflus
+
     # Extraction des commentaires
     st.subheader("Commentaires extraits")
     try:
         all_comments = fetch_all_comments(video_id)
+        
+        # Nettoyage des commentaires
+        for comment in all_comments:
+            comment["Commentaire"] = clean_comment(comment["Commentaire"])
         
         # Affichage des commentaires dans Streamlit
         if all_comments:
