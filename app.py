@@ -122,7 +122,6 @@ with tabs[4]:
             for item in response["items"]:
                 comment = item["snippet"]["topLevelComment"]["snippet"]
                 comments.append({
-                    "Auteur": comment["authorDisplayName"],
                     "Commentaire": comment["textDisplay"],
                     "Likes": comment["likeCount"]
                 })
