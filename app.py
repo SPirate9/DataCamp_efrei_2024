@@ -264,26 +264,27 @@ with tabs[5]:  # Onglet "Analyse de Sentiment"
 
                         # Moyenne des notes
                         avg_note = results_df['Note sur 5'].mean()
-                        st.metric(label="Note Moyenne", value=f"{avg_note:.2f}")
+                        fig = go.Figure(go.Indicator(
+                            mode="gauge+number",
+                            value=avg_note,
+                            title={"text": "Note Moyenne"},
+                            gauge={"axis": {"range": [0, 5]}, "bar": {"color": "green"},
+                                    "steps": [{"range": [0, 2], "color": "red"},
+                                                {"range": [2, 4], "color": "yellow"},
+                                                {"range": [4, 5], "color": "green"}]}
+                        ))
+                        st.plotly_chart(fig)
 
                         # Répartition des sentiments
                         st.write("Répartition des Sentiments")
                         sentiment_counts = results_df['Sentiment'].value_counts()
-                        fig, ax = plt.subplots()
-                        sentiment_counts.plot(kind='pie', autopct='%1.1f%%', colors=['red', 'gray', 'green'], ax=ax)
-                        ax.set_ylabel("")  # Supprimer le label pour un affichage propre
-                        ax.set_title("Répartition des Sentiments")
+                        fig, ax = plt.subplots(figsize=(8, 5))
+                        sns.barplot(x=sentiment_counts.index, y=sentiment_counts.values, palette=['red', 'gray', 'green'], ax=ax)
+                        ax.set(title="Distribution des Sentiments", ylabel="Nombre de commentaires", xlabel="Sentiments")
+                        for i, count in enumerate(sentiment_counts.values):
+                            ax.text(i, count + 1, str(count), ha='center', fontsize=10)
                         st.pyplot(fig)
-
-                        # Nuage de mots des commentaires
-                        st.write("Nuage de Mots des Commentaires")
-                        all_comments = " ".join(results_df['Commentaire'].tolist())
-                        wordcloud = WordCloud(width=800, height=400, background_color="white").generate(all_comments)
-                        fig, ax = plt.subplots(figsize=(10, 5))
-                        ax.imshow(wordcloud, interpolation='bilinear')
-                        ax.axis("off")  # Supprimer les axes
-                        st.pyplot(fig)
-
+                        
                     else:
                         st.error("Veuillez sélectionner une colonne avant de confirmer.")
             except Exception as e:
