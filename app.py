@@ -99,7 +99,7 @@ with tabs[3]:
 
 # Connexion à l'API YouTube
 youtube = build("youtube", "v3", developerKey="AIzaSyAUnpA_084X_LrgZP_bDIe-m6XzD6GW08g")
-video_id = "16duP6ga_Q8"  
+video_id = "16duP6ga_Q8"
 
 # Fonction pour récupérer les commentaires
 def fetch_comments(video_id):
@@ -107,7 +107,7 @@ def fetch_comments(video_id):
     request = youtube.commentThreads().list(
         part="snippet",
         videoId=video_id,
-        maxResults=500 
+        maxResults= 500
     )
     response = request.execute()
 
@@ -120,11 +120,11 @@ def fetch_comments(video_id):
 
     return comments
 
-# Extraction des top commentaires
+# Extraction des commentaires
 with tabs[4]:
-    st.header("Top Commentaires YouTube")
+    st.header("Commentaires YouTube")
     st.write("""
-    Analyse des commentaires populaires de la vidéo YouTube sur Pokémon TCG Pocket.
+    Analyse des commentaires de la vidéo YouTube sur Pokémon TCG Pocket.
     """)
 
     try:
@@ -134,18 +134,14 @@ with tabs[4]:
         # Création du DataFrame
         comments_df = pd.DataFrame(all_comments)
 
-        # Trier les commentaires par nombre de likes (en ordre décroissant)
-        top_comments_df = comments_df.sort_values(by="Likes", ascending=False)
-
         # Affichage des résultats
-        if not top_comments_df.empty:
-            st.write(f"Top commentaires extraits : {len(top_comments_df)}")
-            st.dataframe(top_comments_df)  # Afficher sous forme de tableau interactif
+        if not comments_df.empty:
+            st.write(f"Commentaires extraits : {len(comments_df)}")
+            st.dataframe(comments_df)  # Afficher sous forme de tableau interactif
         else:
             st.write("Aucun commentaire trouvé.")
     except Exception as e:
         st.error(f"Erreur lors de l'extraction des commentaires : {e}")
-
 
 model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
