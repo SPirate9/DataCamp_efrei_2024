@@ -199,18 +199,55 @@ def analyze_sentiment(text):
 
 with tabs[5]:  # Onglet "Analyse de Sentiment"
     st.header("Analyse de Sentiment avec Roberta")
-    st.write("Entrez un texte et obtenez son sentiment ainsi qu'une note associée.")
+    
+    # Option pour l'utilisateur : Choisir entre texte libre ou fichier CSV
+    option = st.radio("Choisissez une option :", ("Entrer un texte", "Charger un fichier CSV"))
+    
+    if option == "Entrer un texte":
+        # Zone de saisie pour l'utilisateur
+        user_input = st.text_area("Saisissez un texte ici :", "")
 
-    # Zone de saisie pour l'utilisateur
-    user_input = st.text_area("Saisissez un texte ici :", "")
+        if user_input.strip():  # Si un texte est saisi
+            sentiment, score, note = analyze_sentiment(user_input)
+            sentiment_label = ["Négatif", "Neutre", "Positif"][sentiment]
 
-    if user_input.strip():  # Si un texte est saisi
-        sentiment, score, note = analyze_sentiment(user_input)
-        sentiment_label = ["Négatif", "Neutre", "Positif"][sentiment]
+            # Résultats de l'analyse
+            st.write("### Résultats")
+            st.write(f"**Texte analysé :** {user_input}")
+            st.write(f"**Sentiment détecté :** {sentiment_label}")
+            st.write(f"**Score de confiance :** {score:.2f}")
+            st.write(f"**Note sur 5 :** {note}")
+    
+    elif option == "Charger un fichier CSV":
+        # Zone pour télécharger le fichier CSV
+        uploaded_file = st.file_uploader("Téléchargez un fichier CSV", type=["csv"])
 
-        # Résultats de l'analyse
-        st.write("### Résultats")
-        st.write(f"**Texte analysé :** {user_input}")
-        st.write(f"**Sentiment détecté :** {sentiment_label}")
-        st.write(f"**Score de confiance :** {score:.2f}")
-        st.write(f"**Note sur 5 :** {note}")
+        if uploaded_file is not None:
+            # Charger le fichier CSV
+            df = pd.read_csv(uploaded_file)
+
+            # Vérifier la présence de la colonne 'content' dans le CSV
+            if 'content' not in df.columns:
+                st.error("Le fichier CSV doit contenir une colonne 'content' avec les commentaires.")
+            else:
+                # Appliquer l'analyse de sentiment à chaque commentaire
+                results = []
+                for comment in df['content']:
+                    sentiment, score, note = analyze_sentiment(comment)
+                    sentiment_label = ["Négatif", "Neutre", "Positif"][sentiment]
+                    results.append({"Commentaire": comment, "Sentiment": sentiment_label, "Score de confiance": score, "Note sur 5": note})
+                
+                # Convertir les résultats en DataFrame
+                results_df = pd.DataFrame(results)
+
+                # Afficher les résultats sous forme de tableau interactif
+                st.subheader("Tableau des Commentaires avec Analyse de Sentiment")
+                st.dataframe(results_df)
+
+                # Option de téléchargement du fichier CSV mis à jour
+                st.download_button(
+                    label="Télécharger le fichier avec l'analyse de sentiment",
+                    data=results_df.to_csv(index=False).encode('utf-8'),
+                    file_name="commentaires_avec_analyse.csv",
+                    mime="text/csv"
+                )
