@@ -9,6 +9,7 @@ import torch
 import matplotlib.pyplot as plt
 import seaborn as sns
 from wordcloud import WordCloud
+import plotly.graph_objects as go
 
 # Connexion à Reddit via l'API
 reddit = praw.Reddit(client_id='g4Qn1BhPN4eXIZxhs302gQ',
