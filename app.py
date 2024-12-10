@@ -1,6 +1,7 @@
 import praw
 import pandas as pd
 import streamlit as st
+from googleapiclient.discovery import build
 
 # Connexion à Reddit via l'API
 reddit = praw.Reddit(client_id='g4Qn1BhPN4eXIZxhs302gQ',
@@ -15,6 +16,7 @@ post_urls = [
     #'https://www.reddit.com/r/PTCGP/comments/1fvoqag/pok%C3%A9mon_tcg_pocket_a_freetoplay_game_done_right/',
     #'https://www.reddit.com/r/jeuxvideo/comments/1gkn0kj/pok%C3%A9mon_pocket_le_jeu_mobile_pok%C3%A9mon_fait/',
     #'https://www.reddit.com/r/iosgaming/comments/1gfbocv/pok%C3%A9mon_tcg_pocket/',
+    #'https://www.reddit.com/r/nintendo/comments/1gjfqdz/pok%C3%A9mon_tcg_pocket_surpasses_12m_in_four_days/'
     'https://www.reddit.com/r/Games/comments/1gfao81/pok%C3%A9mon_trading_card_game_pocket_is_available_now/'
 ]
 
@@ -87,3 +89,45 @@ with tabs[3]:
     - **Power BI :** pour regrouper et visualiser les données de manière interactive.
     """)
     st.write("Les données ont été extraites à l'aide de Python et visualisées avec Streamlit.")
+
+api_key = "AIzaSyAUnpA_084X_LrgZP_bDIe-m6XzD6GW08g"
+youtube = build("youtube", "v3", developerKey=api_key)
+
+with tabs[4]:
+    st.header("YouTube Test")
+    st.write("""
+    Analyse des commentaires d'une vidéo YouTube officielle de Pokémon.
+    Vous pouvez observer les données collectées et visualisées dynamiquement.
+    """)
+
+    # Vidéo cible
+    video_id = "16duP6ga_Q8"  # Remplacez par l'ID de la vidéo à analyser
+    
+    # Récupération des commentaires via l'API YouTube
+    st.subheader("Commentaires extraits")
+    try:
+        request = youtube.commentThreads().list(
+            part="snippet",
+            videoId=video_id,
+            maxResults=100
+        )
+        response = request.execute()
+        
+        # Liste des commentaires
+        comments = []
+        for item in response["items"]:
+            comment = item["snippet"]["topLevelComment"]["snippet"]
+            comments.append({
+                "Auteur": comment["authorDisplayName"],
+                "Commentaire": comment["textDisplay"],
+                "Likes": comment["likeCount"]
+            })
+        
+        # Affichage des commentaires dans Streamlit
+        if comments:
+            st.write(f"Nombre de commentaires extraits : {len(comments)}")
+            st.table(comments)
+        else:
+            st.write("Aucun commentaire trouvé pour cette vidéo.")
+    except Exception as e:
+        st.error(f"Une erreur est survenue lors de l'extraction des commentaires : {e}")
