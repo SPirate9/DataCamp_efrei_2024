@@ -97,6 +97,24 @@ with tabs[3]:
     """)
     st.write("Les données ont été extraites à l'aide de Python et visualisées avec Streamlit.")
 
+# Fonction pour analyser un texte
+def analyze_sentiment(text):
+    inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True)
+    outputs = model(**inputs)
+    scores = torch.nn.functional.softmax(outputs.logits, dim=1)
+    sentiment = torch.argmax(scores).item()  # 0: Négatif, 1: Neutre, 2: Positif
+    sentiment_score = scores[0][sentiment].item()
+
+    # Conversion du sentiment en note sur 5
+    if sentiment == 0:
+        note = 0
+    elif sentiment == 1:
+        note = 3
+    else:
+        note = 5
+
+    return sentiment, sentiment_score, note
+
 # Connexion à l'API YouTube
 youtube = build("youtube", "v3", developerKey="AIzaSyAUnpA_084X_LrgZP_bDIe-m6XzD6GW08g")
 video_id = "16duP6ga_Q8"
@@ -147,24 +165,6 @@ model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSequenceClassification.from_pretrained(model_name)
 
-
-# Fonction pour analyser un texte
-def analyze_sentiment(text):
-    inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True)
-    outputs = model(**inputs)
-    scores = torch.nn.functional.softmax(outputs.logits, dim=1)
-    sentiment = torch.argmax(scores).item()  # 0: Négatif, 1: Neutre, 2: Positif
-    sentiment_score = scores[0][sentiment].item()
-
-    # Conversion du sentiment en note sur 5
-    if sentiment == 0:
-        note = 0
-    elif sentiment == 1:
-        note = 3
-    else:
-        note = 5
-
-    return sentiment, sentiment_score, note
 
 with tabs[5]:  # Onglet "Analyse de Sentiment"
     st.header("Analyse de Sentiment avec Roberta")
