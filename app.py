@@ -69,7 +69,17 @@ def fetch_reddit_data():
     all_comments = []
     for url in post_urls:
         comments = get_comments_from_post(url)
-        all_comments.extend(comments)
+        for comment in comments:
+            cleaned_comment = clean_comment(comment['body'])  # Nettoyer le commentaire
+            sentiment, score, note = analyze_sentiment(cleaned_comment)  # Utiliser la fonction existante
+            sentiment_label = ["Négatif", "Neutre", "Positif"][sentiment]  # Label du sentiment
+            all_comments.append({
+                "Commentaire": cleaned_comment,
+                "Score": comment['score'],
+                "Sentiment": sentiment_label,
+                "Score de confiance": score,
+                "Note sur 5": note
+            })
         print(f"Commentaires récupérés pour {url}: {len(comments)}")
     return pd.DataFrame(all_comments)
 
@@ -86,13 +96,9 @@ with tabs[0]:
     
     df_comments = fetch_reddit_data()
     
-    score_filter = st.slider("Filtrer par score", min_value=int(df_comments["score"].min()), 
-                              max_value=int(df_comments["score"].max()), value=3)
-    filtered_data = df_comments[df_comments["score"] >= score_filter]
-    
-    # Affichage des commentaires filtrés
-    st.write(f"Nombre de commentaires filtrés (score >= {score_filter}):", len(filtered_data))
-    st.write(filtered_data[['score', 'body']])
+    # Affichage des commentaires
+    st.write(f"Nombre total de commentaires récupérés : {len(df_comments)}")
+    st.write(df_comments[['Score', 'Commentaire', 'Sentiment', 'Score de confiance', 'Note sur 5']])
 
 # Onglet 2 : Google Play & Apple Store
 with tabs[1]:
