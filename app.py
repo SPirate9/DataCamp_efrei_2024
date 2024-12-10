@@ -55,7 +55,7 @@ def fetch_reddit_data():
 st.title("Analyse Multi-Plateformes")
 
 # Onglets
-tabs = st.tabs(["Reddit", "Google Play & Apple Store", "Dashboard Power BI", "Explications", "YouTube Test", "Analyse de Sentiment"])
+tabs = st.tabs(["Reddit", "Google Play & Apple Store", "Dashboard Power BI", "Explications", "YouTube", "Analyse de Sentiment"])
 
 # Onglet 1 : Reddit
 with tabs[0]:
@@ -97,80 +97,60 @@ with tabs[3]:
     """)
     st.write("Les données ont été extraites à l'aide de Python et visualisées avec Streamlit.")
 
-api_key = "AIzaSyAUnpA_084X_LrgZP_bDIe-m6XzD6GW08g"
-youtube = build("youtube", "v3", developerKey=api_key)
+youtube = build("youtube", "v3", developerKey="AIzaSyAUnpA_084X_LrgZP_bDIe-m6XzD6GW08g")
+video_id = "16duP6ga_Q8"
 
+def fetch_comments(video_id):
+    comments = []
+    request = youtube.commentThreads().list(
+        part="snippet",
+        videoId=video_id,
+    )
+    response = request.execute()
+
+    for item in response["items"]:
+        comment = item["snippet"]["topLevelComment"]["snippet"]
+        comments.append({
+            "Commentaire": comment["textDisplay"],
+            "Likes": comment["likeCount"]
+        })
+
+    return comments
+
+# Fonction pour nettoyer les commentaires
+def clean_comment(text):
+    text = html.unescape(text)  # Décoder les entités HTML
+    text = re.sub(r"<.*?>", "", text)  # Supprimer les balises HTML
+    text = re.sub(r"\d+:\d+", "", text)  # Supprimer les horodatages (1:37)
+    text = re.sub(r"\s+", " ", text)  # Supprimer les espaces multiples
+    return text.strip()
+
+# Extraction des commentaires
 with tabs[4]:
-    st.header("YouTube Test")
+    st.header("Commentaires YouTube")
     st.write("""
-    Analyse des commentaires d'une vidéo YouTube officielle de Pokémon.
-    Vous pouvez observer les données collectées et visualisées dynamiquement.
+    Analyse des commentaires de la vidéo YouTube sur Pokémon TCG Pocket.
     """)
 
-    # Vidéo cible
-    video_id = "16duP6ga_Q8"  # Remplacez par l'ID de la vidéo à analyser
-
-    # Fonction pour récupérer tous les commentaires avec pagination
-    def fetch_all_comments(video_id):
-        comments = []
-        request = youtube.commentThreads().list(
-            part="snippet",
-            videoId=video_id,
-            maxResults=100
-        )
-        response = request.execute()
-        
-        while response:
-            for item in response["items"]:
-                comment = item["snippet"]["topLevelComment"]["snippet"]
-                comments.append({
-                    "Commentaire": comment["textDisplay"],
-                    "Likes": comment["likeCount"]
-                })
-
-            # Passer à la page suivante s'il y a un token
-            if "nextPageToken" in response:
-                request = youtube.commentThreads().list(
-                    part="snippet",
-                    videoId=video_id,
-                    maxResults=100,
-                    pageToken=response["nextPageToken"]
-                )
-                response = request.execute()
-            else:
-                break
-
-        return comments
-
-    # Fonction pour nettoyer les commentaires
-    def clean_comment(text):
-        text = html.unescape(text)  # Décoder les entités HTML (&#39; -> ')
-        text = re.sub(r"<.*?>", "", text)  # Supprimer les balises HTML
-        text = re.sub(r"\d+:\d+", "", text)  # Supprimer les horodatages (1:37)
-        text = re.sub(r"\s+", " ", text)  # Supprimer les espaces multiples
-        return text.strip()  # Supprimer les espaces superflus
-
-    # Extraction des commentaires
-    st.subheader("Commentaires extraits")
     try:
-        all_comments = fetch_all_comments(video_id)
-        
+        # Extraction des commentaires
+        all_comments = fetch_comments(video_id)
+
         # Nettoyage des commentaires
         for comment in all_comments:
             comment["Commentaire"] = clean_comment(comment["Commentaire"])
-        
-        # Vérification des doublons : suppression des commentaires identiques
-        comments_df = pd.DataFrame(all_comments)
-        comments_df = comments_df.drop_duplicates(subset="Commentaire", keep="first")  # Supprime les doublons basés sur le texte du commentaire
 
-        # Affichage des commentaires dans Streamlit
+        # Supprimer les doublons
+        comments_df = pd.DataFrame(all_comments).drop_duplicates(subset="Commentaire", keep="first")
+
+        # Affichage des résultats
         if not comments_df.empty:
-            st.write(f"Nombre total de commentaires extraits (sans doublons) : {len(comments_df)}")
+            st.write(f"Commentaires extraits : {len(comments_df)}")
             st.dataframe(comments_df)  # Afficher sous forme de tableau interactif
         else:
-            st.write("Aucun commentaire trouvé pour cette vidéo.")
+            st.write("Aucun commentaire trouvé.")
     except Exception as e:
-        st.error(f"Une erreur est survenue lors de l'extraction des commentaires : {e}")
+        st.error(f"Erreur lors de l'extraction des commentaires : {e}")
 
 
 model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
