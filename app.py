@@ -102,10 +102,10 @@ with tabs[4]:
 
     # Vidéo cible
     video_id = "16duP6ga_Q8"  # Remplacez par l'ID de la vidéo à analyser
-    
-    # Récupération des commentaires via l'API YouTube
-    st.subheader("Commentaires extraits")
-    try:
+
+    # Fonction pour récupérer tous les commentaires avec pagination
+    def fetch_all_comments(video_id):
+        comments = []
         request = youtube.commentThreads().list(
             part="snippet",
             videoId=video_id,
@@ -113,20 +113,39 @@ with tabs[4]:
         )
         response = request.execute()
         
-        # Liste des commentaires
-        comments = []
-        for item in response["items"]:
-            comment = item["snippet"]["topLevelComment"]["snippet"]
-            comments.append({
-                "Auteur": comment["authorDisplayName"],
-                "Commentaire": comment["textDisplay"],
-                "Likes": comment["likeCount"]
-            })
+        while response:
+            for item in response["items"]:
+                comment = item["snippet"]["topLevelComment"]["snippet"]
+                comments.append({
+                    "Auteur": comment["authorDisplayName"],
+                    "Commentaire": comment["textDisplay"],
+                    "Likes": comment["likeCount"]
+                })
+
+            # Passer à la page suivante s'il y a un token
+            if "nextPageToken" in response:
+                request = youtube.commentThreads().list(
+                    part="snippet",
+                    videoId=video_id,
+                    maxResults=100,
+                    pageToken=response["nextPageToken"]
+                )
+                response = request.execute()
+            else:
+                break
+
+        return comments
+
+    # Extraction des commentaires
+    st.subheader("Commentaires extraits")
+    try:
+        all_comments = fetch_all_comments(video_id)
         
         # Affichage des commentaires dans Streamlit
-        if comments:
-            st.write(f"Nombre de commentaires extraits : {len(comments)}")
-            st.table(comments)
+        if all_comments:
+            st.write(f"Nombre total de commentaires extraits : {len(all_comments)}")
+            df_comments = pd.DataFrame(all_comments)
+            st.dataframe(df_comments)  # Afficher sous forme de tableau interactif
         else:
             st.write("Aucun commentaire trouvé pour cette vidéo.")
     except Exception as e:
