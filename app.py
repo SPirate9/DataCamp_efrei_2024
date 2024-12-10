@@ -198,7 +198,7 @@ def analyze_sentiment(text):
     return sentiment, sentiment_score, note
 
 with tabs[5]:  # Onglet "Analyse de Sentiment"
-    st.header("Analyse de Sentiment")
+    st.header("Analyse de Sentiment avec Roberta")
     st.write("Entrez un texte et obtenez son sentiment ainsi qu'une note associée.")
 
     # Zone de saisie pour l'utilisateur
