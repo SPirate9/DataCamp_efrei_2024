@@ -109,7 +109,6 @@ def clean_comment(text):
     text = re.sub(r"\s+", " ", text)  # Réduire les espaces multiples
     return text.strip()
 
-# Fonction pour récupérer les commentaires
 def fetch_comments(video_id):
     request = youtube.commentThreads().list(part="snippet", videoId=video_id, maxResults=500)
     response = request.execute()
@@ -118,9 +117,14 @@ def fetch_comments(video_id):
     for item in response["items"]:
         comment = item["snippet"]["topLevelComment"]["snippet"]
         cleaned_comment = clean_comment(comment["textDisplay"])  # Nettoyer le commentaire
+        sentiment, score, note = analyze_sentiment(cleaned_comment)  # Utiliser la fonction existante
+        sentiment_label = ["Négatif", "Neutre", "Positif"][sentiment]  # Label du sentiment
         comments.append({
             "Commentaire": cleaned_comment,
-            "Likes": comment["likeCount"]
+            "Likes": comment["likeCount"],
+            "Sentiment": sentiment_label,
+            "Score de confiance": score,
+            "Note sur 5": note
         })
     return comments
 
