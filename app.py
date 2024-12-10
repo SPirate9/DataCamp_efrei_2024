@@ -91,9 +91,6 @@ with tabs[3]:
     """)
     st.write("Les données ont été extraites à l'aide de Python et visualisées avec Streamlit.")
 
-import html
-import re
-
 api_key = "AIzaSyAUnpA_084X_LrgZP_bDIe-m6XzD6GW08g"
 youtube = build("youtube", "v3", developerKey=api_key)
 
@@ -156,11 +153,14 @@ with tabs[4]:
         for comment in all_comments:
             comment["Commentaire"] = clean_comment(comment["Commentaire"])
         
+        # Vérification des doublons : suppression des commentaires identiques
+        comments_df = pd.DataFrame(all_comments)
+        comments_df = comments_df.drop_duplicates(subset="Commentaire", keep="first")  # Supprime les doublons basés sur le texte du commentaire
+
         # Affichage des commentaires dans Streamlit
-        if all_comments:
-            st.write(f"Nombre total de commentaires extraits : {len(all_comments)}")
-            df_comments = pd.DataFrame(all_comments)
-            st.dataframe(df_comments)  # Afficher sous forme de tableau interactif
+        if not comments_df.empty:
+            st.write(f"Nombre total de commentaires extraits (sans doublons) : {len(comments_df)}")
+            st.dataframe(comments_df)  # Afficher sous forme de tableau interactif
         else:
             st.write("Aucun commentaire trouvé pour cette vidéo.")
     except Exception as e:
