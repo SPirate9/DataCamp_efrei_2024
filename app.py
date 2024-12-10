@@ -97,15 +97,17 @@ with tabs[3]:
     """)
     st.write("Les données ont été extraites à l'aide de Python et visualisées avec Streamlit.")
 
+# Connexion à l'API YouTube
 youtube = build("youtube", "v3", developerKey="AIzaSyAUnpA_084X_LrgZP_bDIe-m6XzD6GW08g")
 video_id = "16duP6ga_Q8"
 
+# Fonction pour récupérer les commentaires
 def fetch_comments(video_id):
     comments = []
     request = youtube.commentThreads().list(
         part="snippet",
         videoId=video_id,
-        maxResults=500 
+        maxResults=500  # Vous pouvez ajuster cette valeur si nécessaire
     )
     response = request.execute()
 
@@ -118,14 +120,6 @@ def fetch_comments(video_id):
 
     return comments
 
-# Fonction pour nettoyer les commentaires
-def clean_comment(text):
-    text = html.unescape(text)  # Décoder les entités HTML
-    text = re.sub(r"<.*?>", "", text)  # Supprimer les balises HTML
-    text = re.sub(r"\d+:\d+", "", text)  # Supprimer les horodatages (1:37)
-    text = re.sub(r"\s+", " ", text)  # Supprimer les espaces multiples
-    return text.strip()
-
 # Extraction des commentaires
 with tabs[4]:
     st.header("Commentaires YouTube")
@@ -137,12 +131,8 @@ with tabs[4]:
         # Extraction des commentaires
         all_comments = fetch_comments(video_id)
 
-        # Nettoyage des commentaires
-        for comment in all_comments:
-            comment["Commentaire"] = clean_comment(comment["Commentaire"])
-
-        # Supprimer les doublons
-        comments_df = pd.DataFrame(all_comments).drop_duplicates(subset="Commentaire", keep="first")
+        # Création du DataFrame
+        comments_df = pd.DataFrame(all_comments)
 
         # Affichage des résultats
         if not comments_df.empty:
