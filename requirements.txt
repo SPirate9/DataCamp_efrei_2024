@@ -4,3 +4,6 @@ streamlit
 google-api-python-client
 transformers
 torch
+wordcloud
+seaborn
+matplotlib
