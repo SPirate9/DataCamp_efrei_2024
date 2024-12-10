@@ -10,6 +10,28 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.graph_objects as go
 
+model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForSequenceClassification.from_pretrained(model_name)
+
+# Fonction pour analyser un texte
+def analyze_sentiment(text):
+    inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True)
+    outputs = model(**inputs)
+    scores = torch.nn.functional.softmax(outputs.logits, dim=1)
+    sentiment = torch.argmax(scores).item()  # 0: Négatif, 1: Neutre, 2: Positif
+    sentiment_score = scores[0][sentiment].item()
+
+    # Conversion du sentiment en note sur 5
+    if sentiment == 0:
+        note = 0
+    elif sentiment == 1:
+        note = 3
+    else:
+        note = 5
+
+    return sentiment, sentiment_score, note
+
 # Connexion à Reddit via l'API
 reddit = praw.Reddit(client_id='g4Qn1BhPN4eXIZxhs302gQ',
                      client_secret='-Qu81qyQb_x2r2OGi9bYoEEP3u2g_g',
@@ -91,33 +113,16 @@ with tabs[3]:
     st.header("Explications")
     st.write("""
     Ce projet vise à analyser les commentaires des utilisateurs sur plusieurs plateformes :
-    - **Reddit :** pour collecter des commentaires et votes d'utilisateurs passionnés.
-    - **Google Play & Apple Store :** pour analyser les avis sur les applications mobiles.
-    - **Power BI :** pour regrouper et visualiser les données de manière interactive.
+    - **Reddit :** Collecte des commentaires et votes d'utilisateurs passionnés autour de Pokémon TCG Pocket.
+    - **Google Play & Apple Store :** Analyse des avis laissés par les utilisateurs des applications mobiles.
+    - **Power BI :** Un tableau de bord interactif pour regrouper et visualiser les données de manière dynamique.
+    - **YouTube :** Extraction et analyse des commentaires des vidéos YouTube sur Pokémon TCG Pocket.
+    - **Analyse de Sentiment :** Un onglet dédié à l'analyse de sentiment où vous pouvez soit saisir un texte pour analyse, soit télécharger un fichier CSV pour obtenir une analyse sur l'ensemble des commentaires présents dans ce fichier.
     """)
-    st.write("Les données ont été extraites à l'aide de Python et visualisées avec Streamlit.")
-
-model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForSequenceClassification.from_pretrained(model_name)
-
-# Fonction pour analyser un texte
-def analyze_sentiment(text):
-    inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True)
-    outputs = model(**inputs)
-    scores = torch.nn.functional.softmax(outputs.logits, dim=1)
-    sentiment = torch.argmax(scores).item()  # 0: Négatif, 1: Neutre, 2: Positif
-    sentiment_score = scores[0][sentiment].item()
-
-    # Conversion du sentiment en note sur 5
-    if sentiment == 0:
-        note = 0
-    elif sentiment == 1:
-        note = 3
-    else:
-        note = 5
-
-    return sentiment, sentiment_score, note
+    st.write("""
+    Les données ont été extraites à l'aide de Python et visualisées avec **Streamlit**. 
+    Cette application permet ainsi une exploration interactive des commentaires utilisateurs sur diverses plateformes, avec un focus particulier sur l'analyse de sentiment via **Roberta**, un modèle de traitement du langage naturel.
+    """)
 
 # Connexion à l'API YouTube
 youtube = build("youtube", "v3", developerKey="AIzaSyAUnpA_084X_LrgZP_bDIe-m6XzD6GW08g")
