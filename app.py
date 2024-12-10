@@ -32,6 +32,14 @@ def analyze_sentiment(text):
 
     return sentiment, sentiment_score, note
 
+# Fonction pour nettoyer les commentaires
+def clean_comment(text):
+    text = html.unescape(text)  # Décoder les entités HTML (par exemple, &#39; -> ')
+    text = re.sub(r"<.*?>", "", text)  # Supprimer les balises HTML
+    text = re.sub(r"\d+:\d+", "", text)  # Supprimer les horodatages (par exemple, 1:37)
+    text = re.sub(r"\s+", " ", text)  # Réduire les espaces multiples
+    return text.strip()
+
 # Connexion à Reddit via l'API
 reddit = praw.Reddit(client_id='g4Qn1BhPN4eXIZxhs302gQ',
                      client_secret='-Qu81qyQb_x2r2OGi9bYoEEP3u2g_g',
@@ -133,14 +141,6 @@ with tabs[3]:
 # Connexion à l'API YouTube
 youtube = build("youtube", "v3", developerKey="AIzaSyAUnpA_084X_LrgZP_bDIe-m6XzD6GW08g")
 video_id = "16duP6ga_Q8"
-
-# Fonction pour nettoyer les commentaires
-def clean_comment(text):
-    text = html.unescape(text)  # Décoder les entités HTML (par exemple, &#39; -> ')
-    text = re.sub(r"<.*?>", "", text)  # Supprimer les balises HTML
-    text = re.sub(r"\d+:\d+", "", text)  # Supprimer les horodatages (par exemple, 1:37)
-    text = re.sub(r"\s+", " ", text)  # Réduire les espaces multiples
-    return text.strip()
 
 def fetch_comments(video_id):
     request = youtube.commentThreads().list(part="snippet", videoId=video_id, maxResults=500)
