@@ -223,31 +223,40 @@ with tabs[5]:  # Onglet "Analyse de Sentiment"
         uploaded_file = st.file_uploader("Téléchargez un fichier CSV", type=["csv"])
 
         if uploaded_file is not None:
-            # Charger le fichier CSV
-            df = pd.read_csv(uploaded_file)
+            try:
+                # Charger le fichier CSV
+                df = pd.read_csv(uploaded_file)
+                st.write("Aperçu du fichier chargé :")
+                st.dataframe(df)
 
-            # Vérifier la présence de la colonne 'content' dans le CSV
-            if 'content' not in df.columns:
-                st.error("Le fichier CSV doit contenir une colonne 'content' avec les commentaires.")
-            else:
-                # Appliquer l'analyse de sentiment à chaque commentaire
-                results = []
-                for comment in df['content']:
-                    sentiment, score, note = analyze_sentiment(comment)
-                    sentiment_label = ["Négatif", "Neutre", "Positif"][sentiment]
-                    results.append({"Commentaire": comment, "Sentiment": sentiment_label, "Score de confiance": score, "Note sur 5": note})
-                
-                # Convertir les résultats en DataFrame
-                results_df = pd.DataFrame(results)
+                # L'utilisateur sélectionne la colonne des commentaires
+                columns = df.columns.tolist()
+                selected_column = st.selectbox("Sélectionnez la colonne contenant les commentaires :", columns)
 
-                # Afficher les résultats sous forme de tableau interactif
-                st.subheader("Tableau des Commentaires avec Analyse de Sentiment")
-                st.dataframe(results_df)
+                if selected_column:
+                    # Appliquer l'analyse de sentiment à chaque commentaire
+                    st.write(f"Analyse de la colonne : {selected_column}")
+                    comments = df[selected_column].astype(str)  # Convertir en chaînes de caractères si nécessaire
+                    results = []
 
-                # Option de téléchargement du fichier CSV mis à jour
-                st.download_button(
-                    label="Télécharger le fichier avec l'analyse de sentiment",
-                    data=results_df.to_csv(index=False).encode('utf-8'),
-                    file_name="commentaires_avec_analyse.csv",
-                    mime="text/csv"
-                )
+                    for comment in comments:
+                        sentiment, score, note = analyze_sentiment(comment)
+                        sentiment_label = ["Négatif", "Neutre", "Positif"][sentiment]
+                        results.append({"Commentaire": comment, "Sentiment": sentiment_label, "Score de confiance": score, "Note sur 5": note})
+
+                    # Convertir les résultats en DataFrame
+                    results_df = pd.DataFrame(results)
+
+                    # Afficher les résultats sous forme de tableau interactif
+                    st.subheader("Tableau des Commentaires avec Analyse de Sentiment")
+                    st.dataframe(results_df)
+
+                    # Option de téléchargement du fichier CSV mis à jour
+                    st.download_button(
+                        label="Télécharger le fichier avec l'analyse de sentiment",
+                        data=results_df.to_csv(index=False).encode('utf-8'),
+                        file_name="commentaires_avec_analyse.csv",
+                        mime="text/csv"
+                    )
+            except Exception as e:
+                st.error(f"Erreur lors du chargement ou de l'analyse du fichier CSV : {e}")
