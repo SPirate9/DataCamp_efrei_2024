@@ -4,6 +4,8 @@ import streamlit as st
 from googleapiclient.discovery import build
 import html
 import re
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch 
 
 # Connexion à Reddit via l'API
 reddit = praw.Reddit(client_id='g4Qn1BhPN4eXIZxhs302gQ',
@@ -50,7 +52,7 @@ def fetch_reddit_data():
 st.title("Analyse Multi-Plateformes")
 
 # Onglets
-tabs = st.tabs(["Reddit", "Google Play & Apple Store", "Dashboard Power BI", "Explications", "YouTube Test"])
+tabs = st.tabs(["Reddit", "Google Play & Apple Store", "Dashboard Power BI", "Explications", "YouTube Test", "Analyse de Sentiment"])
 
 # Onglet 1 : Reddit
 with tabs[0]:
@@ -93,6 +95,11 @@ with tabs[3]:
 
 api_key = "AIzaSyAUnpA_084X_LrgZP_bDIe-m6XzD6GW08g"
 youtube = build("youtube", "v3", developerKey=api_key)
+
+model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForSequenceClassification.from_pretrained(model_name)
+
 
 with tabs[4]:
     st.header("YouTube Test")
@@ -165,3 +172,45 @@ with tabs[4]:
             st.write("Aucun commentaire trouvé pour cette vidéo.")
     except Exception as e:
         st.error(f"Une erreur est survenue lors de l'extraction des commentaires : {e}")
+
+
+model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForSequenceClassification.from_pretrained(model_name)
+
+
+# Fonction pour analyser un texte
+def analyze_sentiment(text):
+    inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True)
+    outputs = model(**inputs)
+    scores = torch.nn.functional.softmax(outputs.logits, dim=1)
+    sentiment = torch.argmax(scores).item()  # 0: Négatif, 1: Neutre, 2: Positif
+    sentiment_score = scores[0][sentiment].item()
+
+    # Conversion du sentiment en note sur 5
+    if sentiment == 0:
+        note = 0
+    elif sentiment == 1:
+        note = 3
+    else:
+        note = 5
+
+    return sentiment, sentiment_score, note
+
+with tabs[5]:  # Onglet "Analyse de Sentiment"
+    st.header("Analyse de Sentiment")
+    st.write("Entrez un texte et obtenez son sentiment ainsi qu'une note associée.")
+
+    # Zone de saisie pour l'utilisateur
+    user_input = st.text_area("Saisissez un texte ici :", "")
+
+    if user_input.strip():  # Si un texte est saisi
+        sentiment, score, note = analyze_sentiment(user_input)
+        sentiment_label = ["Négatif", "Neutre", "Positif"][sentiment]
+
+        # Résultats de l'analyse
+        st.write("### Résultats")
+        st.write(f"**Texte analysé :** {user_input}")
+        st.write(f"**Sentiment détecté :** {sentiment_label}")
+        st.write(f"**Score de confiance :** {score:.2f}")
+        st.write(f"**Note sur 5 :** {note}")
