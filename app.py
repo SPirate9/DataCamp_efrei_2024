@@ -97,6 +97,10 @@ with tabs[3]:
     """)
     st.write("Les données ont été extraites à l'aide de Python et visualisées avec Streamlit.")
 
+model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForSequenceClassification.from_pretrained(model_name)
+
 # Fonction pour analyser un texte
 def analyze_sentiment(text):
     inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True)
@@ -160,11 +164,6 @@ with tabs[4]:
             st.write("Aucun commentaire trouvé.")
     except Exception as e:
         st.error(f"Erreur lors de l'extraction des commentaires : {e}")
-
-model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForSequenceClassification.from_pretrained(model_name)
-
 
 with tabs[5]:  # Onglet "Analyse de Sentiment"
     st.header("Analyse de Sentiment avec Roberta")
