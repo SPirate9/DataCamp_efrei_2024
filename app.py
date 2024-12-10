@@ -30,7 +30,6 @@ def get_comments_from_post(post_url):
     comments = []
     for comment in post.comments.list():
         comment_info = {
-            'author': comment.author.name if comment.author else 'Anonyme',
             'score': comment.score,  # Le nombre de votes (score)
             'body': comment.body
         }
