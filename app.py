@@ -81,7 +81,7 @@ with tabs[2]:
 
 # Onglet 3 : Dashboard Tableau
 with tabs[1]:
-    tableau_url = "https://public.tableau.com/app/profile/jos.mendes.pereira/viz/Classeur1_17339178683830/Tableaudebord1?publish=yes"
+    tableau_url = "https://public.tableau.com/app/profile/jos.mendes.pereira/viz/Pokemon_review/Tableaudebord1?publish=yes"
     st.header("Dashboard Tableau")
     st.write("Visualisez ici un tableau de bord Tableau intégré.")
     st.write("### Tableau Public intégré dans Streamlit")
