@@ -74,7 +74,7 @@ tabs = st.tabs(["Explications", "Dashboard Tableau", "Google Play & Apple Store"
 # Onglet 2 : Google Play & Apple Store
 with tabs[2]:
     st.header("Analyse des Stores")
-    st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store")
+    st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store (~109000 avis). La dernière colonne (notes_calculees) est la note qu'a calculé notre modèle de regression logistique. Ce modèle est légèrement moins efficaces que le modele roberta mais il est beaucoup plus rapide.")
     all_reviews_notees = pd.read_csv('all_reviews_notees 2.csv', sep=';') 
 
     st.write("### Aperçu des avis notés :")
