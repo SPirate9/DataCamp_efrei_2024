@@ -40,62 +40,12 @@ def clean_comment(text):
     text = re.sub(r"\s+", " ", text)  # Réduire les espaces multiples
     return text.strip()
 
-# Connexion à Reddit via l'API
-reddit = praw.Reddit(client_id='g4Qn1BhPN4eXIZxhs302gQ',
-                     client_secret='-Qu81qyQb_x2r2OGi9bYoEEP3u2g_g',
-                     user_agent='votre_user_agent')
-
-# Liste des URLs des posts Reddit
-post_urls = [
-    #'https://www.reddit.com/r/Farfa/comments/1ggbdlg/my_honest_review_to_pokemon_tcg_pocket_as_a_guy/?tl=fr',
-    #'https://www.reddit.com/r/PokemonTCG/comments/1giugtx/what_are_yall_thoughts_on_pkmn_tcg_pocket/',
-    #'https://www.reddit.com/r/gachagaming/comments/1go9pxd/pok%C3%A9mon_tcg_pocket_first_impressions/',
-    #'https://www.reddit.com/r/PTCGP/comments/1fvoqag/pok%C3%A9mon_tcg_pocket_a_freetoplay_game_done_right/',
-    #'https://www.reddit.com/r/jeuxvideo/comments/1gkn0kj/pok%C3%A9mon_pocket_le_jeu_mobile_pok%C3%A9mon_fait/',
-    #'https://www.reddit.com/r/iosgaming/comments/1gfbocv/pok%C3%A9mon_tcg_pocket/',
-    #'https://www.reddit.com/r/nintendo/comments/1gjfqdz/pok%C3%A9mon_tcg_pocket_surpasses_12m_in_four_days/'
-    'https://www.reddit.com/r/Games/comments/1gfao81/pok%C3%A9mon_trading_card_game_pocket_is_available_now/'
-]
-
-# Fonction pour récupérer les commentaires d'un post
-def get_comments_from_post(post_url):
-    post = reddit.submission(url=post_url)
-    post.comments.replace_more(limit=None)  # Charger tous les commentaires
-
-    comments = []
-    for comment in post.comments.list():
-        comment_info = {
-            'score': comment.score,  # Le nombre de votes (score)
-            'body': comment.body
-        }
-        comments.append(comment_info)    
-    return comments
-
-# Récupérer les commentaires pour chaque URL
-def fetch_reddit_data():
-    all_comments = []
-    for url in post_urls:
-        comments = get_comments_from_post(url)
-        all_comments.extend(comments)
-        print(f"Commentaires récupérés pour {url}: {len(comments)}")
-    return pd.DataFrame(all_comments)
 
 # Application principale
 st.title("Analyse des Sentiments des Joueurs pour Pokémon TCG Pocket")
 
 # Onglets
-tabs = st.tabs(["Explications", "Dashboard Tableau", "Google Play & Apple Store", "YouTube", "Reddit", "Analyse de Sentiment"])
-
-# Onglet 1 : Reddit
-with tabs[4]:
-    st.header("Commentaires Reddit")
-    st.write("Données extraites des discussions Reddit sur Pokémon TCG Pocket.")
-    
-    df_comments = fetch_reddit_data()
-    
-    # Affichage direct de tous les commentaires
-    st.write(f"Nombre de commentaires récupérés : {len(df_comments)}")
-    st.write(df_comments[['score', 'body']])
+tabs = st.tabs(["Explications", "Dashboard Tableau", "Google Play & Apple Store", "YouTube", "Analyse de Sentiment"])
 
 # Onglet 2 : Google Play & Apple Store
 with tabs[2]:
