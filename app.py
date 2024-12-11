@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.graph_objects as go
 
+
 # Charger le modèle Roberta au début
 model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -82,9 +83,13 @@ with tabs[2]:
 
 # Onglet 3 : Dashboard Tableau
 with tabs[1]:
+    tableau_url = "https://public.tableau.com/app/profile/jos.mendes.pereira/viz/Classeur1_17339178683830/Tableaudebord1?publish=yes"
     st.header("Dashboard Tableau")
     st.write("Visualisez ici un tableau de bord Tableau intégré.")
-    st.write("Travaux en cours...")
+    st.write("### Tableau Public intégré dans Streamlit")
+    st.components.v1.html(f"""
+    <iframe src="{tableau_url}?:embed=yes&:showVizHome=no" width="100%" height="650px" frameborder="0"></iframe>
+    """, height=9000, width=800)
 
 # Onglet 4 : Explications
 with tabs[0]:
