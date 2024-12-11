@@ -47,7 +47,7 @@ def display_sentiment_results(text, sentiment, score, note):
 
 # Fonction pour extraire les commentaires YouTube
 def fetch_comments(video_id):
-    youtube = build("youtube", "v3", developerKey="YOUR_API_KEY")
+    youtube = build("youtube", "v3", developerKey="AIzaSyAUnpA_084X_LrgZP_bDIe-m6XzD6GW08g")
     request = youtube.commentThreads().list(part="snippet", videoId=video_id, maxResults=500)
     response = request.execute()
 
