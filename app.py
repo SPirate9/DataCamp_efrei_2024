@@ -85,7 +85,7 @@ with tabs[1]:
     st.header("Dashboard Tableau")
     st.write("Visualisez ici un tableau de bord Tableau intégré.")
     st.write("### Tableau Public intégré dans Streamlit")
-    st.dataframe(tableau_url)
+    #st.dataframe(tableau_url)
 
 # Onglet 4 : Explications
 with tabs[0]:
