@@ -83,13 +83,11 @@ with tabs[2]:
 
 # Onglet 3 : Dashboard Tableau
 with tabs[1]:
-    tableau_url = "https://public.tableau.com/app/profile/jos.mendes.pereira/viz/Classeur1_17339178683830/Tableaudebord1?publish=yes"
+    tableau_url = "https://public.tableau.com/app/profile/jos.mendes.pereira/viz/Pokemon_review/Tableaudebord1?publish=yes"
     st.header("Dashboard Tableau")
     st.write("Visualisez ici un tableau de bord Tableau intégré.")
     st.write("### Tableau Public intégré dans Streamlit")
-    st.components.v1.html(f"""
-    <iframe src="{tableau_url}?:embed=yes&:showVizHome=no" width="100%" height="650px" frameborder="0"></iframe>
-    """, height=9000, width=800)
+    st.components.v1.iframe(tableau_url, width=800, height=600)
 
 # Onglet 4 : Explications
 with tabs[0]:
