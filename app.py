@@ -80,7 +80,7 @@ with tabs[2]:
     st.write("### Aperçu des avis notés :")
     st.dataframe(all_reviews_notees) 
     # Moyennes des Notes
-    st.write(f"- Moyenne des Notes : {all_reviews_notees['note'].mean():.2f}")
+    st.write(f"- Moyenne des Notes : {all_reviews_notees['score'].mean():.2f}")
     st.write(f"- Moyenne des Notes Calculées : {all_reviews_notees['notes_calculees'].mean():.2f}")
 
     # Histogrammes
