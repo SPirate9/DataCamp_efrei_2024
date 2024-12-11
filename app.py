@@ -68,17 +68,7 @@ def get_comments_from_post(post_url):
             'score': comment.score,  # Le nombre de votes (score)
             'body': comment.body
         }
-        comments.append(comment_info)
-    cleaned_comment = clean_comment(comment.body)  # Nettoyer le commentaire
-    sentiment, score, note = analyze_sentiment(cleaned_comment)  # Utiliser la fonction existante
-    sentiment_label = ["Négatif", "Neutre", "Positif"][sentiment]  # Label du sentiment
-    comment_info.update({
-        "cleaned_body": cleaned_comment,
-        "sentiment": sentiment_label,
-        "sentiment_score": score,
-        "note": note
-    })
-    
+        comments.append(comment_info)    
     return comments
 
 # Récupérer les commentaires pour chaque URL
