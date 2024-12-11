@@ -76,62 +76,8 @@ tabs = st.tabs(["Explications", "Dashboard Tableau", "Google Play & Apple Store"
 # Onglet 2 : Google Play & Apple Store
 with tabs[2]:
     st.header("Analyse des Stores")
-    st.write("Cet onglet affiche des informations récupérées sur Google Play et l'Apple Store.")
-
-    countries = ["us", "fr", "de"]
-    app_id_google = 'jp.pokemon.pokemontcgp'
-    app_id_apple = 'com.pokemon.pokemontcg'
-
-    # Listes pour accumuler les données
-    all_google_reviews = []
-    all_apple_reviews = []
-
-    # Scraper les avis pour chaque pays (Google Play)
-    for country in countries:
-        result, _ = reviews(
-            app_id_google,
-            lang="en",  # Spécifiez "en" pour la langue anglaise ou ajustez si nécessaire
-            country=country,
-            count=1000  # Ajustez le nombre de résultats si nécessaire
-        )
-        for review in result:
-            review['Pays'] = country
-            all_google_reviews.append(review)
-
-    # Scraper les avis pour l'Apple Store
-    app = AppStore(country="us", app_name="pokemontcg")
-    apple_reviews = app.reviews(page=1, count=1000)  # Ajustez le nombre de résultats si nécessaire
-    for review in apple_reviews:
-        review['Pays'] = "US"  # On suppose ici que l'on récupère les avis pour l'US
-        all_apple_reviews.append(review)
-
-    # Convertir les données en DataFrame pour Google Play
-    google_df = pd.DataFrame(all_google_reviews)
-    google_df["Provenance"] = "Google Play"
-
-    # Convertir les données en DataFrame pour l'Apple Store
-    apple_df = pd.DataFrame(all_apple_reviews)
-    apple_df["Provenance"] = "Apple Store"
-
-    # Fusionner les DataFrames Google Play et Apple Store
-    combined_df = pd.concat([google_df, apple_df], ignore_index=True)
-
-    # Nettoyage des données
-    combined_df_clean = combined_df.drop(columns=["userName", "userImage", "thumbsUpCount", "replyContent", "repliedAt", "reviewId", "reviewCreatedVersion"], errors="ignore")
-    combined_df_clean = combined_df_clean.drop_duplicates()
-    combined_df_clean.rename(columns={'at': 'date'}, inplace=True)
-
-    # Affichage du DataFrame nettoyé
-    st.dataframe(combined_df_clean)
-
-    # Option de téléchargement du fichier CSV
-    combined_df_clean.to_csv("reviews_combined.csv", index=False)
-    st.download_button(
-        label="Télécharger les avis des Stores",
-        data=combined_df_clean.to_csv(index=False).encode('utf-8'),
-        file_name="reviews_combined.csv",
-        mime="text/csv"
-    )
+    st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store (données à intégrer).")
+    st.write("Travaux en cours...")
 
 # Onglet 3 : Dashboard Tableau
 with tabs[1]:
