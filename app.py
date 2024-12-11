@@ -48,23 +48,38 @@ def display_sentiment_results(text, sentiment, score, note):
 # Fonction pour extraire les commentaires YouTube
 def fetch_comments(video_id):
     youtube = build("youtube", "v3", developerKey="AIzaSyAUnpA_084X_LrgZP_bDIe-m6XzD6GW08g")
-    request = youtube.commentThreads().list(part="snippet", videoId=video_id, maxResults=500)
-    response = request.execute()
-
     comments = []
-    for item in response["items"]:
-        comment = item["snippet"]["topLevelComment"]["snippet"]
-        cleaned_comment = clean_comment(comment["textDisplay"])  # Nettoyer le commentaire
-        sentiment, score, note = analyze_sentiment(cleaned_comment)  # Utiliser la fonction existante
-        sentiment_label = ["Négatif", "Neutre", "Positif"][sentiment]  # Label du sentiment
-        comments.append({
-            "Commentaire": cleaned_comment,
-            "Likes": comment["likeCount"],
-            "Sentiment": sentiment_label,
-            "Score de confiance": score,
-            "Note sur 5": note
-        })
-    return comments
+    next_page_token = None
+    max_results = 100
+    max_total_comments = 1000  # Modifier cette valeur pour récupérer plus ou moins de commentaires
+
+    while len(comments) < max_total_comments:
+        request = youtube.commentThreads().list(
+            part="snippet",
+            videoId=video_id,
+            maxResults=max_results,
+            pageToken=next_page_token
+        )
+        response = request.execute()
+
+        for item in response["items"]:
+            comment = item["snippet"]["topLevelComment"]["snippet"]
+            cleaned_comment = clean_comment(comment["textDisplay"])  # Nettoyer le commentaire
+            sentiment, score, note = analyze_sentiment(cleaned_comment)  # Utiliser la fonction existante
+            sentiment_label = ["Négatif", "Neutre", "Positif"][sentiment]  # Label du sentiment
+            comments.append({
+                "Commentaire": cleaned_comment,
+                "Likes": comment["likeCount"],
+                "Sentiment": sentiment_label,
+                "Score de confiance": score,
+                "Note sur 5": note
+            })
+
+        next_page_token = response.get("nextPageToken")
+        if not next_page_token:
+            break
+
+    return comments[:max_total_comments]
 
 # Application principale
 st.title("Analyse des Sentiments des Joueurs pour Pokémon TCG Pocket")

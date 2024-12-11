@@ -166,3 +166,6 @@ with open("comments_output.txt", "w", encoding="utf-8") as f:
 
 print(f"Nombre total de commentaires récupérés: {len(all_comments)}")
 print("Les commentaires ont été sauvegardés dans 'comments_output.txt'.")
+
+
+
