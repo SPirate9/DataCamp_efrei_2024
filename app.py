@@ -75,7 +75,7 @@ tabs = st.tabs(["Explications", "Dashboard Tableau", "Google Play & Apple Store"
 with tabs[2]:
     st.header("Analyse des Stores")
     st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store")
-    all_reviews_notees = pd.read_csv('all_reviews_notees 2.csv') 
+    all_reviews_notees = pd.read_csv('all_reviews_notees 2.csv', sep=';') 
 
     st.write("### Aperçu des avis notés :")
     st.dataframe(all_reviews_notees) 
