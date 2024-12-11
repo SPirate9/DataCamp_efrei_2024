@@ -8,21 +8,24 @@ import torch
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.graph_objects as go
+import os
 
 
 # Charger le modèle Roberta au début
+# Désactiver le parallélisme des tokenizers
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSequenceClassification.from_pretrained(model_name)
 
 # Fonction pour analyser un texte
 def analyze_sentiment(text):
-    inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True)
+    inputs = tokenizer(text, return_tensors="pt", truncation=True, padding="max_length", max_length=512)
     outputs = model(**inputs)
     scores = torch.nn.functional.softmax(outputs.logits, dim=1)
     sentiment = torch.argmax(scores).item()  # 0: Négatif, 1: Neutre, 2: Positif
     sentiment_score = scores[0][sentiment].item()
-    note = {0: 0, 1: 3, 2: 5}[sentiment] # Conversion du sentiment en note sur 5
+    note = {0: 0, 1: 3, 2: 5}[sentiment]  # Conversion du sentiment en note sur 5
     
     return sentiment, sentiment_score, note
 
