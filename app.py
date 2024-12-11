@@ -74,8 +74,11 @@ tabs = st.tabs(["Explications", "Dashboard Tableau", "Google Play & Apple Store"
 # Onglet 2 : Google Play & Apple Store
 with tabs[2]:
     st.header("Analyse des Stores")
-    st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store (données à intégrer).")
-    st.write("Travaux en cours...")
+    st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store")
+    uploaded_file = st.file_uploader("all_reviews", type=["csv"])
+    df = pd.read_csv(uploaded_file)
+    st.write("Aperçu du fichier CSV téléchargé :")
+    st.dataframe(df)
 
 # Onglet 3 : Dashboard Tableau
 with tabs[1]:
