@@ -85,10 +85,10 @@ def fetch_reddit_data():
 st.title("Analyse des Sentiments des Joueurs pour Pokémon TCG Pocket")
 
 # Onglets
-tabs = st.tabs(["Reddit", "Google Play & Apple Store", "Dashboard Tableau", "Explications", "YouTube", "Analyse de Sentiment"])
+tabs = st.tabs(["Explications", "Dashboard Tableau", "Google Play & Apple Store", "YouTube", "Reddit", "Analyse de Sentiment"])
 
 # Onglet 1 : Reddit
-with tabs[0]:
+with tabs[4]:
     st.header("Commentaires Reddit")
     st.write("Données extraites des discussions Reddit sur Pokémon TCG Pocket.")
     
@@ -99,21 +99,21 @@ with tabs[0]:
     st.write(df_comments[['score', 'body']])
 
 # Onglet 2 : Google Play & Apple Store
-with tabs[1]:
+with tabs[2]:
     st.header("Analyse des Stores")
     st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store (données à intégrer).")
     # Exemple de placeholder :
     st.write("Travaux en cours...")
 
-# Onglet 3 : Dashboard Power BI
-with tabs[2]:
+# Onglet 3 : Dashboard Tableau
+with tabs[1]:
     st.header("Dashboard Tableau")
     st.write("Visualisez ici un tableau de bord Tableau intégré.")
     # Vous pouvez intégrer un lien ou une iframe Power BI ici.
     st.write("Travaux en cours...")
 
 # Onglet 4 : Explications
-with tabs[3]:
+with tabs[0]:
     st.header("Explications")
     st.write("""
     Ce projet vise à analyser les commentaires des utilisateurs sur plusieurs plateformes :
@@ -152,7 +152,7 @@ def fetch_comments(video_id):
     return comments
 
 # Extraction et affichage des commentaires
-with tabs[4]:
+with tabs[3]:
     st.header("Commentaires YouTube")
     st.write("Analyse des commentaires de la vidéo YouTube sur Pokémon TCG Pocket.")
     
