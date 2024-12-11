@@ -22,10 +22,8 @@ def analyze_sentiment(text):
     scores = torch.nn.functional.softmax(outputs.logits, dim=1)
     sentiment = torch.argmax(scores).item()  # 0: Négatif, 1: Neutre, 2: Positif
     sentiment_score = scores[0][sentiment].item()
-
-    # Conversion du sentiment en note sur 5
-    note = {0: 0, 1: 3, 2: 5}[sentiment]
-
+    note = {0: 0, 1: 3, 2: 5}[sentiment] # Conversion du sentiment en note sur 5
+    
     return sentiment, sentiment_score, note
 
 # Fonction pour nettoyer les commentaires
@@ -48,12 +46,12 @@ def display_sentiment_results(text, sentiment, score, note):
 # Fonction pour extraire les commentaires YouTube
 def fetch_comments(video_id):
     youtube = build("youtube", "v3", developerKey="AIzaSyAUnpA_084X_LrgZP_bDIe-m6XzD6GW08g")
-    request = youtube.commentThreads().list(part="snippet", videoId=video_id, maxResults=500)
+    request = youtube.commentThreads().list(part="snippet", videoId=video_id, maxResults=100)
     response = request.execute()
 
-    comments = []
-    for item in response["items"]:
-        comment = item["snippet"]["topLevelComment"]["snippet"]
+    comments = [] #Une liste vide pour accumuler les données des commentaires après traitement.
+    for item in response["items"]: #Chaque élément de cette liste représente un commentaire extrait
+        comment = item["snippet"]["topLevelComment"]["snippet"] #Accède au contenu principal du commentaire (texte, likes, etc.).
         cleaned_comment = clean_comment(comment["textDisplay"])  # Nettoyer le commentaire
         sentiment, score, note = analyze_sentiment(cleaned_comment)  # Utiliser la fonction existante
         sentiment_label = ["Négatif", "Neutre", "Positif"][sentiment]  # Label du sentiment
@@ -87,9 +85,7 @@ with tabs[1]:
     st.header("Dashboard Tableau")
     st.write("Visualisez ici un tableau de bord Tableau intégré.")
     st.write("### Tableau Public intégré dans Streamlit")
-    st.components.v1.html(f"""
-    <iframe src="{tableau_url}?:embed=yes&:showVizHome=no" width="100%" height="650px" frameborder="0"></iframe>
-    """, height=9000, width=800)
+    st.dataframe(tableau_url)
 
 # Onglet 4 : Explications
 with tabs[0]:
