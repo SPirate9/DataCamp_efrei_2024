@@ -71,21 +71,11 @@ def get_comments_from_post(post_url):
         comments.append(comment_info)    
     return comments
 
-# Ajout d'analyse des sentiments
+# Récupérer les commentaires pour chaque URL
 def fetch_reddit_data():
     all_comments = []
     for url in post_urls:
         comments = get_comments_from_post(url)
-        for comment in comments:
-            cleaned_body = clean_comment(comment['body'])  # Nettoyer le commentaire
-            sentiment, sentiment_score, note = analyze_sentiment(cleaned_body)  # Analyse de sentiment
-            sentiment_label = ["Négatif", "Neutre", "Positif"][sentiment]  # Label de sentiment
-            comment.update({
-                "cleaned_body": cleaned_body,
-                "sentiment": sentiment_label,
-                "sentiment_score": sentiment_score,
-                "note": note
-            })
         all_comments.extend(comments)
         print(f"Commentaires récupérés pour {url}: {len(comments)}")
     return pd.DataFrame(all_comments)
@@ -103,18 +93,9 @@ with tabs[4]:
     
     df_comments = fetch_reddit_data()
     
+    # Affichage direct de tous les commentaires
     st.write(f"Nombre de commentaires récupérés : {len(df_comments)}")
-    st.dataframe(df_comments[['score', 'cleaned_body', 'sentiment', 'sentiment_score', 'note']])
-
-    # Graphiques
-    st.subheader("Visualisation des Sentiments")
-    sentiment_counts = df_comments['sentiment'].value_counts()
-    fig, ax = plt.subplots(figsize=(8, 5))
-    sns.barplot(x=sentiment_counts.index, y=sentiment_counts.values, palette=['red', 'gray', 'green'], ax=ax)
-    ax.set(title="Distribution des Sentiments", ylabel="Nombre de commentaires", xlabel="Sentiments")
-    for i, count in enumerate(sentiment_counts.values):
-        ax.text(i, count + 1, str(count), ha='center', fontsize=10)
-    st.pyplot(fig)
+    st.write(df_comments[['score', 'body']])
 
 # Onglet 2 : Google Play & Apple Store
 with tabs[2]:
