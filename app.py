@@ -9,8 +9,6 @@ import torch
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.graph_objects as go
-from google_play_scraper import reviews, Sort
-from app_store_scraper import AppStore
 
 model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
