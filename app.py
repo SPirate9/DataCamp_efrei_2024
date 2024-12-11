@@ -9,6 +9,8 @@ import torch
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.graph_objects as go
+from google_play_scraper import reviews, Sort
+from app_store_scraper import AppStore
 
 model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -71,11 +73,21 @@ def get_comments_from_post(post_url):
         comments.append(comment_info)    
     return comments
 
-# Récupérer les commentaires pour chaque URL
+# Ajout d'analyse des sentiments
 def fetch_reddit_data():
     all_comments = []
     for url in post_urls:
         comments = get_comments_from_post(url)
+        for comment in comments:
+            cleaned_body = clean_comment(comment['body'])  # Nettoyer le commentaire
+            sentiment, sentiment_score, note = analyze_sentiment(cleaned_body)  # Analyse de sentiment
+            sentiment_label = ["Négatif", "Neutre", "Positif"][sentiment]  # Label de sentiment
+            comment.update({
+                "cleaned_body": cleaned_body,
+                "sentiment": sentiment_label,
+                "sentiment_score": sentiment_score,
+                "note": note
+            })
         all_comments.extend(comments)
         print(f"Commentaires récupérés pour {url}: {len(comments)}")
     return pd.DataFrame(all_comments)
@@ -93,9 +105,18 @@ with tabs[4]:
     
     df_comments = fetch_reddit_data()
     
-    # Affichage direct de tous les commentaires
     st.write(f"Nombre de commentaires récupérés : {len(df_comments)}")
-    st.write(df_comments[['score', 'body']])
+    st.dataframe(df_comments[['score', 'cleaned_body', 'sentiment', 'sentiment_score', 'note']])
+
+    # Graphiques
+    st.subheader("Visualisation des Sentiments")
+    sentiment_counts = df_comments['sentiment'].value_counts()
+    fig, ax = plt.subplots(figsize=(8, 5))
+    sns.barplot(x=sentiment_counts.index, y=sentiment_counts.values, palette=['red', 'gray', 'green'], ax=ax)
+    ax.set(title="Distribution des Sentiments", ylabel="Nombre de commentaires", xlabel="Sentiments")
+    for i, count in enumerate(sentiment_counts.values):
+        ax.text(i, count + 1, str(count), ha='center', fontsize=10)
+    st.pyplot(fig)
 
 # Onglet 2 : Google Play & Apple Store
 with tabs[2]:
