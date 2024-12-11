@@ -82,10 +82,10 @@ def fetch_reddit_data():
     return pd.DataFrame(all_comments)
 
 # Application principale
-st.title("Analyse Multi-Plateformes")
+st.title("Analyse des Sentiments des Joueurs pour Pokémon TCG Pocket")
 
 # Onglets
-tabs = st.tabs(["Reddit", "Google Play & Apple Store", "Dashboard Power BI", "Explications", "YouTube", "Analyse de Sentiment"])
+tabs = st.tabs(["Reddit", "Google Play & Apple Store", "Dashboard Tableau", "Explications", "YouTube", "Analyse de Sentiment"])
 
 # Onglet 1 : Reddit
 with tabs[0]:
@@ -107,8 +107,8 @@ with tabs[1]:
 
 # Onglet 3 : Dashboard Power BI
 with tabs[2]:
-    st.header("Dashboard Power BI")
-    st.write("Visualisez ici un tableau de bord Power BI intégré.")
+    st.header("Dashboard Tableau")
+    st.write("Visualisez ici un tableau de bord Tableau intégré.")
     # Vous pouvez intégrer un lien ou une iframe Power BI ici.
     st.write("Travaux en cours...")
 
