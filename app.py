@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.graph_objects as go
 
+# Charger le modèle Roberta au début
 model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSequenceClassification.from_pretrained(model_name)
@@ -23,12 +24,7 @@ def analyze_sentiment(text):
     sentiment_score = scores[0][sentiment].item()
 
     # Conversion du sentiment en note sur 5
-    if sentiment == 0:
-        note = 0
-    elif sentiment == 1:
-        note = 3
-    else:
-        note = 5
+    note = {0: 0, 1: 3, 2: 5}[sentiment]
 
     return sentiment, sentiment_score, note
 
@@ -40,47 +36,18 @@ def clean_comment(text):
     text = re.sub(r"\s+", " ", text)  # Réduire les espaces multiples
     return text.strip()
 
+# Fonction pour afficher les résultats de l'analyse de sentiment
+def display_sentiment_results(text, sentiment, score, note):
+    sentiment_label = ["Négatif", "Neutre", "Positif"][sentiment]
+    st.write("### Résultats")
+    st.write(f"**Texte analysé :** {text}")
+    st.write(f"**Sentiment détecté :** {sentiment_label}")
+    st.write(f"**Score de confiance :** {score:.2f}")
+    st.write(f"**Note sur 5 :** {note}")
 
-# Application principale
-st.title("Analyse des Sentiments des Joueurs pour Pokémon TCG Pocket")
-
-# Onglets
-tabs = st.tabs(["Explications", "Dashboard Tableau", "Google Play & Apple Store", "YouTube", "Analyse de Sentiment"])
-
-# Onglet 2 : Google Play & Apple Store
-with tabs[2]:
-    st.header("Analyse des Stores")
-    st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store (données à intégrer).")
-    # Exemple de placeholder :
-    st.write("Travaux en cours...")
-
-# Onglet 3 : Dashboard Tableau
-with tabs[1]:
-    st.header("Dashboard Tableau")
-    st.write("Visualisez ici un tableau de bord Tableau intégré.")
-    # Vous pouvez intégrer un lien ou une iframe Power BI ici.
-    st.write("Travaux en cours...")
-
-# Onglet 4 : Explications
-with tabs[0]:
-    st.header("Explications")
-    st.write("""
-    Ce projet vise à analyser les commentaires des utilisateurs sur plusieurs plateformes :
-    - **Google Play & Apple Store :** Analyse des avis laissés par les utilisateurs des applications mobiles.
-    - **Dashboard Tableau :** Un tableau de bord interactif pour regrouper et visualiser les données de manière dynamique.
-    - **YouTube :** Extraction et analyse des commentaires des vidéos YouTube sur Pokémon TCG Pocket.
-    - **Analyse de Sentiment :** Un onglet dédié à l'analyse de sentiment où vous pouvez soit saisir un texte pour analyse, soit télécharger un fichier CSV pour obtenir une analyse sur l'ensemble des commentaires présents dans ce fichier.
-    """)
-    st.write("""
-    Les données ont été extraites à l'aide de Python et visualisées avec **Streamlit**. 
-    Cette application permet ainsi une exploration interactive des commentaires utilisateurs sur diverses plateformes, avec un focus particulier sur l'analyse de sentiment via **Roberta**, un modèle de traitement du langage naturel.
-    """)
-
-# Connexion à l'API YouTube
-youtube = build("youtube", "v3", developerKey="AIzaSyAUnpA_084X_LrgZP_bDIe-m6XzD6GW08g")
-video_id = "16duP6ga_Q8"
-
+# Fonction pour extraire les commentaires YouTube
 def fetch_comments(video_id):
+    youtube = build("youtube", "v3", developerKey="YOUR_API_KEY")
     request = youtube.commentThreads().list(part="snippet", videoId=video_id, maxResults=500)
     response = request.execute()
 
@@ -99,13 +66,46 @@ def fetch_comments(video_id):
         })
     return comments
 
-# Extraction et affichage des commentaires
+# Application principale
+st.title("Analyse des Sentiments des Joueurs pour Pokémon TCG Pocket")
+
+# Onglets
+tabs = st.tabs(["Explications", "Dashboard Tableau", "Google Play & Apple Store", "YouTube", "Analyse de Sentiment"])
+
+# Onglet 2 : Google Play & Apple Store
+with tabs[2]:
+    st.header("Analyse des Stores")
+    st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store (données à intégrer).")
+    st.write("Travaux en cours...")
+
+# Onglet 3 : Dashboard Tableau
+with tabs[1]:
+    st.header("Dashboard Tableau")
+    st.write("Visualisez ici un tableau de bord Tableau intégré.")
+    st.write("Travaux en cours...")
+
+# Onglet 4 : Explications
+with tabs[0]:
+    st.header("Explications")
+    st.write("""
+    Ce projet vise à analyser les commentaires des utilisateurs sur plusieurs plateformes :
+    - **Google Play & Apple Store :** Analyse des avis laissés par les utilisateurs des applications mobiles.
+    - **Dashboard Tableau :** Un tableau de bord interactif pour regrouper et visualiser les données de manière dynamique.
+    - **YouTube :** Extraction et analyse des commentaires des vidéos YouTube sur Pokémon TCG Pocket.
+    - **Analyse de Sentiment :** Un onglet dédié à l'analyse de sentiment où vous pouvez soit saisir un texte pour analyse, soit télécharger un fichier CSV pour obtenir une analyse sur l'ensemble des commentaires présents dans ce fichier.
+    """)
+    st.write("""
+    Les données ont été extraites à l'aide de Python et visualisées avec **Streamlit**. 
+    Cette application permet ainsi une exploration interactive des commentaires utilisateurs sur diverses plateformes, avec un focus particulier sur l'analyse de sentiment via **Roberta**, un modèle de traitement du langage naturel.
+    """)
+
+# Extraction et affichage des commentaires YouTube
 with tabs[3]:
     st.header("Commentaires YouTube")
     st.write("Analyse des commentaires de la vidéo YouTube sur Pokémon TCG Pocket.")
     
     try:
-        comments_df = pd.DataFrame(fetch_comments(video_id))
+        comments_df = pd.DataFrame(fetch_comments("16duP6ga_Q8"))
         if not comments_df.empty:
             st.write(f"Commentaires extraits : {len(comments_df)}")
             st.dataframe(comments_df)
@@ -126,14 +126,7 @@ with tabs[4]:  # Onglet "Analyse de Sentiment"
 
         if user_input.strip():  # Si un texte est saisi
             sentiment, score, note = analyze_sentiment(user_input)
-            sentiment_label = ["Négatif", "Neutre", "Positif"][sentiment]
-
-            # Résultats de l'analyse
-            st.write("### Résultats")
-            st.write(f"**Texte analysé :** {user_input}")
-            st.write(f"**Sentiment détecté :** {sentiment_label}")
-            st.write(f"**Score de confiance :** {score:.2f}")
-            st.write(f"**Note sur 5 :** {note}")
+            display_sentiment_results(user_input, sentiment, score, note)
     
     elif option == "Charger un fichier CSV":
         uploaded_file = st.file_uploader("Téléchargez un fichier CSV", type=["csv"])
