@@ -104,7 +104,7 @@ with tabs[0]:
 # Extraction et affichage des commentaires YouTube
 with tabs[3]:
     st.header("Commentaires YouTube")
-    st.write("Analyse des commentaires de la vidéo YouTube sur Pokémon TCG Pocket.")
+    st.write("Analyse des commentaires de la vidéo YouTube sur Pokémon TCG Pocket avec le modèle roberta.")
     
     try:
         comments_df = pd.DataFrame(fetch_comments("16duP6ga_Q8"))
