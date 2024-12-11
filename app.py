@@ -1,4 +1,3 @@
-import praw
 import pandas as pd
 import streamlit as st
 from googleapiclient.discovery import build
@@ -9,6 +8,8 @@ import torch
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.graph_objects as go
+from google_play_scraper import reviews, Sort
+from app_store_scraper import AppStore
 
 # Charger le modèle Roberta au début
 model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
@@ -76,7 +77,37 @@ tabs = st.tabs(["Explications", "Dashboard Tableau", "Google Play & Apple Store"
 with tabs[2]:
     st.header("Analyse des Stores")
     st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store (données à intégrer).")
-    st.write("Travaux en cours...")
+    countries = ["us", "fr", "de"]
+    app_id_google = 'jp.pokemon.pokemontcgp'
+
+    # Listes pour accumuler les données
+    all_google_reviews = []
+
+    # Scraper les avis pour chaque pays
+    for country in countries:
+        # Google Play Store
+        result, _ = reviews(
+            app_id_google,
+            lang="en",  # Spécifiez "en" pour la langue anglaise ou ajustez si nécessaire
+            country=country,
+            count=100000 # Un nombre plus élevé de résultats
+        )
+        for review in result:
+            review['Pays']= country
+            all_google_reviews.append(review)
+
+    # Convertir les données en DataFrame
+    google_df = pd.DataFrame(all_google_reviews)
+    # Ajouter la colonne de provenance
+    google_df["Provenance"] = "Google Play"
+
+    #suppression des colonnes inutiles
+    google_df_clean = google_df.drop(columns=["userName", "userImage","thumbsUpCount","replyContent","repliedAt","reviewId","reviewCreatedVersion"], errors="ignore")
+    google_df_clean = google_df_clean.drop_duplicates()
+    google_df_clean.rename(columns={'at': 'date'}, inplace=True)
+
+    google_df_clean.to_csv("google_reviews.csv", index=False)
+    st.dataframe(google_df_clean)
 
 # Onglet 3 : Dashboard Tableau
 with tabs[1]:

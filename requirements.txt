@@ -7,3 +7,5 @@ torch
 seaborn
 matplotlib
 plotly
+app_store_scraper
+google_play_scraper
