@@ -78,18 +78,7 @@ with tabs[2]:
     all_reviews_notees = pd.read_csv('all_reviews_notees 2.csv', sep=';') 
 
     st.write("### Aperçu des avis notés :")
-    st.dataframe(all_reviews_notees) 
-    # Moyennes des Notes
-    st.write(f"- Moyenne des Notes : {all_reviews_notees['score'].mean():.2f}")
-    st.write(f"- Moyenne des Notes Calculées : {all_reviews_notees['notes_calculees'].mean():.2f}")
-
-    # Histogrammes
-    fig, ax = plt.subplots(1, 2, figsize=(12, 6))
-    ax[0].hist(all_reviews_notees['note'], bins=5, color='blue', alpha=0.7)
-    ax[1].hist(all_reviews_notees['notes_calculees'], bins=5, color='orange', alpha=0.7)
-    ax[0].set_title("Distribution des Notes")
-    ax[1].set_title("Distribution des Notes Calculées")
-    st.pyplot(fig)
+    st.dataframe(all_reviews_notees)
 
 # Onglet 3 : Dashboard Tableau
 with tabs[1]:
