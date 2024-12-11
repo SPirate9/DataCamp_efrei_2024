@@ -130,7 +130,7 @@ with tabs[1]:
     </script>
     """
     # Affiche le code HTML dans Streamlit
-    st.components.v1.html(tableau_html, height=800)
+    st.components.v1.html(tableau_html, height=1000)
 
 # Onglet 4 : Explications
 with tabs[0]:
