@@ -115,7 +115,7 @@ with tabs[3]:
     except Exception as e:
         st.error(f"Erreur lors de l'extraction des commentaires : {e}")
 
-with tabs[5]:  # Onglet "Analyse de Sentiment"
+with tabs[4]:  # Onglet "Analyse de Sentiment"
     st.header("Analyse de Sentiment avec Roberta")
     
     # Option pour l'utilisateur : Choisir entre texte libre ou fichier CSV
