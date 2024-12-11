@@ -7,4 +7,3 @@ torch
 seaborn
 matplotlib
 plotly
-os
