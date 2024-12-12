@@ -89,8 +89,7 @@ with tabs[2]:
 # Onglet 3 : Dashboard Tableau
 with tabs[1]:
     st.header("Dashboard Tableau")
-    st.write("Visualisez ici un tableau de bord Tableau intégré.")
-    st.write("### Tableau Public intégré dans Streamlit")
+    st.write("Visualisez ici un tableau de bord Tableau intégré représentant l'analyse des notes Apple store & Play store.")
     # Code HTML du tableau Tableau Public
     tableau_html = """
     <div class='tableauPlaceholder' id='viz1733948073609' style='position: relative'>
