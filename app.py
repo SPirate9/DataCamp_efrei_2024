@@ -70,11 +70,11 @@ def fetch_comments(video_id):
 st.title("Analyse des Sentiments des Joueurs pour Pokémon TCG Pocket")
 
 # Onglets
-tabs = st.tabs(["Explications", "Dashboard Tableau", "Google Play & Apple Store", "YouTube", "Analyse de Sentiment"])
+tabs = st.tabs(["Explications", "Dashboard Tableau", "Google Play & Apple Store (Roberta)", "Google Play & Apple Store (Logistic Regression)", "YouTube", "Analyse de Sentiment"])
 
 # Onglet 2 : Google Play & Apple Store
-with tabs[2]:
-    st.header("Analyse des Stores")
+with tabs[3]:
+    st.header("Analyse de Sentiment - Google Play & Apple Store (Logistic Regression)")
     st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store (~109000 avis). La dernière colonne (notes_calculees) est la note qu'a calculé notre modèle de regression logistique. Ce modèle est légèrement moins efficaces que le modele roberta mais il est beaucoup plus rapide.")
     all_reviews_notees = pd.read_csv('data_source/all_reviews_notees 2.csv', sep=';') 
 
@@ -82,6 +82,19 @@ with tabs[2]:
     st.dataframe(all_reviews_notees)
 
     tableau_html = "<div class='tableauPlaceholder' id='viz1734012329999' style='position: relative'><noscript><a href='#'><img alt='Tableau de bord 1 ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Cl&#47;Classeur2_17340108242920&#47;Tableaudebord1&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='Classeur2_17340108242920&#47;Tableaudebord1' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Cl&#47;Classeur2_17340108242920&#47;Tableaudebord1&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='fr-FR' /><param name='filter' value='publish=yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1734012329999');                    var vizElement = divElement.getElementsByTagName('object')[0];                    if ( divElement.offsetWidth > 800 ) { vizElement.style.width='100%';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';} else if ( divElement.offsetWidth > 500 ) { vizElement.style.width='100%';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';} else { vizElement.style.width='100%';vizElement.style.height='1427px';}                     var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>"
+
+    # Affiche le code HTML dans Streamlit
+    st.components.v1.html(tableau_html, height=1500)
+
+with tabs[2]:
+    st.header("Analyse de Sentiment - Google Play & Apple Store (Roberta)")
+    st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store (~109000 avis). La dernière colonne (note) est la note calculée par notre modèle RoBERTa en fonction du sentiment détecté dans les avis. Ce modèle est plus précis pour l'analyse de sentiment que notre modèle de régression logistique, mais il peut être un peu plus lent en raison de sa taille et de sa complexité.")
+    all_reviews_notees = pd.read_csv('data_source/samples_roberta', sep=';') 
+
+    st.write("### Aperçu des avis notés :")
+    st.dataframe(all_reviews_notees)
+
+    tableau_html = "<div class='tableauPlaceholder' id='viz1734036991471' style='position: relative'><noscript><a href='#'><img alt='Note par Pays ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Ro&#47;Roberta_app_play_store&#47;Feuille1&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='Roberta_app_play_store&#47;Feuille1' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Ro&#47;Roberta_app_play_store&#47;Feuille1&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='fr-FR' /><param name='filter' value='publish=yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1734036991471');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.width='100%';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';                    var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>"
 
     # Affiche le code HTML dans Streamlit
     st.components.v1.html(tableau_html, height=1500)
