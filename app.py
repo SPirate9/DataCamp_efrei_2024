@@ -10,23 +10,30 @@ import seaborn as sns
 import plotly.graph_objects as go
 
 
-# Charger le modèle Roberta au début
-model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForSequenceClassification.from_pretrained(model_name)
+@st.cache_resource  # Le modèle est mis en cache pour éviter de le recharger à chaque fois
+def load_model():
+    model_name = "cardiffnlp/twitter-roberta-base-sentiment-latest"
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForSequenceClassification.from_pretrained(model_name)
+    return tokenizer, model
 
-# Fonction pour analyser un texte
+# Charger le modèle une seule fois
+tokenizer, model = load_model()
+
 def analyze_sentiment(text):
+    # Préparer les données d'entrée pour le modèle
     inputs = tokenizer(text, return_tensors="pt", truncation=True, padding='max_length', max_length=514)
+    # Obtenir les prédictions
     outputs = model(**inputs)
+    # Calcul des scores avec la fonction softmax
     scores = torch.nn.functional.softmax(outputs.logits, dim=1)
+    # Identifier le sentiment le plus probable
     sentiment = torch.argmax(scores).item()  # 0: Négatif, 1: Neutre, 2: Positif
     sentiment_score = scores[0][sentiment].item()
-
-    # Conversion du sentiment en note sur 5
+    # Conversion du sentiment en une note sur 5
     note = {0: 0, 1: 3, 2: 5}[sentiment]
-
     return sentiment, sentiment_score, note
+
 
 # Fonction pour nettoyer les commentaires
 def clean_comment(text):
