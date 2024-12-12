@@ -144,7 +144,7 @@ with tabs[0]:
     - **Google Play & Apple Store :** Analyse des avis laissés par les utilisateurs des applications mobiles.
     - **Dashboard Tableau :** Un tableau de bord interactif pour regrouper et visualiser les données de manière dynamique.
     - **YouTube :** Extraction et analyse des commentaires des vidéos YouTube sur Pokémon TCG Pocket.
-    - **Analyse de Sentiments :** Un onglet dédié à l'analyse de sentiment où vous pouvez soit saisir un texte pour analyse, soit télécharger un fichier CSV pour obtenir une analyse sur l'ensemble des commentaires présents dans ce fichier.
+    - **Analyse de Sentiment :** Un onglet dédié à l'analyse de sentiment où vous pouvez soit saisir un texte pour analyse, soit télécharger un fichier CSV pour obtenir une analyse sur l'ensemble des commentaires présents dans ce fichier.
     """)
     st.write("""
     Les données ont été extraites à l'aide de Python et visualisées avec **Streamlit**. 
