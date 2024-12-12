@@ -257,3 +257,19 @@ with tabs[4]:  # Onglet "Analyse de Sentiment"
                         st.error("Veuillez sélectionner une colonne avant de confirmer.")
             except Exception as e:
                 st.error(f"Erreur lors du chargement ou de l'analyse du fichier CSV : {e}")
+
+
+
+
+# Charger le fichier CSV
+df = pd.read_csv('sampled_pour_roberta 2.csv')
+
+# Assurez-vous de spécifier la bonne colonne
+text_column = 'content'
+
+# Appliquer la fonction d'analyse de sentiment sur la colonne
+df['sentiment'], df['sentiment_score'] = zip(*df[text_column].apply(analyze_sentiment))
+
+# Optionnel : Sauvegarder les résultats dans un nouveau fichier CSV
+df.to_csv('votre_fichier_avec_sentiments.csv', index=False)
+
