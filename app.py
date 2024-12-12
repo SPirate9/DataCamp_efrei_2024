@@ -165,7 +165,7 @@ with tabs[0]:
     """)
 
 # Extraction et affichage des commentaires YouTube
-with tabs[3]:
+with tabs[4]:
     st.header("Commentaires YouTube")
     st.write("Analyse des commentaires de la vidéo YouTube sur Pokémon TCG Pocket avec le modèle roberta.")
     
@@ -183,7 +183,7 @@ with tabs[3]:
     st.components.v1.html(tableau_html, height=1500)
 
 
-with tabs[4]:  # Onglet "Analyse de Sentiment"
+with tabs[5]:  # Onglet "Analyse de Sentiment"
     st.header("Analyse de Sentiment avec Roberta")
     
     # Option pour l'utilisateur : Choisir entre texte libre ou fichier CSV
