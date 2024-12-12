@@ -7,6 +7,7 @@ import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import html
 import re
+from googleapiclient.discovery import build  # Importer pour accéder à l'API YouTube
 
 # Global variables for model and tokenizer
 MODEL_NAME = "cardiffnlp/twitter-roberta-base-sentiment-latest"
@@ -50,6 +51,27 @@ def analyze_sentiment(text):
         "score": sentiment_score,
         "note": note
     }
+
+def fetch_comments(video_id):
+    """Fetch comments from a YouTube video and analyze sentiment"""
+    youtube = build("youtube", "v3", developerKey="AIzaSyAUnpA_084X_LrgZP_bDIe-m6XzD6GW08g")
+    request = youtube.commentThreads().list(part="snippet", videoId=video_id, maxResults=100)
+    response = request.execute()
+
+    comments = []
+    for item in response["items"]:
+        comment = item["snippet"]["topLevelComment"]["snippet"]
+        cleaned_comment = clean_comment(comment["textDisplay"])  # Nettoyer le commentaire
+        analysis = analyze_sentiment(cleaned_comment)  # Utiliser la fonction existante pour analyser le sentiment
+        sentiment_label = analysis["sentiment"]  # Label du sentiment
+        comments.append({
+            "Commentaire": cleaned_comment,
+            "Likes": comment["likeCount"],
+            "Sentiment": sentiment_label,
+            "Score de confiance": analysis["score"],
+            "Note sur 5": analysis["note"]
+        })
+    return comments
 
 def analyze_comments_dataframe(df, column):
     """Analyze sentiment for an entire DataFrame"""
@@ -155,10 +177,30 @@ def main():
                     except Exception as e:
                         st.error(f"Erreur lors de l'analyse : {e}")
 
-    # Placeholder for other modes
     elif app_mode == "Analyse YouTube":
-        st.write("Fonctionnalité en développement")
-    
+        st.header("Analyse des Commentaires YouTube")
+        video_id = st.text_input("Entrez l'ID de la vidéo YouTube :")
+        
+        if st.button("Analyser les Commentaires YouTube"):
+            if video_id:
+                try:
+                    comments = fetch_comments(video_id)
+                    comments_df = pd.DataFrame(comments)
+                    st.dataframe(comments_df)
+                    
+                    # Visualizations
+                    display_sentiment_visualizations(comments_df)
+                    
+                    # Option to download results
+                    st.download_button(
+                        label="Télécharger les résultats",
+                        data=comments_df.to_csv(index=False).encode('utf-8'),
+                        file_name="youtube_comments_sentiment.csv",
+                        mime="text/csv"
+                    )
+                except Exception as e:
+                    st.error(f"Erreur lors de l'analyse : {e}")
+
     elif app_mode == "Dashboard Tableau":
         st.write("Fonctionnalité en développement")
 
