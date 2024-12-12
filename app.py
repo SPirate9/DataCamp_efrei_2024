@@ -89,7 +89,7 @@ with tabs[3]:
 with tabs[2]:
     st.header("Analyse de Sentiment - Google Play & Apple Store (Roberta)")
     st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store (~109000 avis). La dernière colonne (note) est la note calculée par notre modèle RoBERTa en fonction du sentiment détecté dans les avis. Ce modèle est plus précis pour l'analyse de sentiment que notre modèle de régression logistique, mais il peut être un peu plus lent en raison de sa taille et de sa complexité.")
-    all_reviews_notees = pd.read_csv('data_source/samples_roberta', sep=';') 
+    all_reviews_notees = pd.read_csv('data_source/samples_roberta.csv', sep=';') 
 
     st.write("### Aperçu des avis notés :")
     st.dataframe(all_reviews_notees)
