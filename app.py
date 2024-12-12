@@ -17,7 +17,7 @@ model = AutoModelForSequenceClassification.from_pretrained(model_name)
 
 # Fonction pour analyser un texte
 def analyze_sentiment(text):
-    inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True)
+    inputs = tokenizer(text, return_tensors="pt", truncation=True, padding='max_length', max_length=514)
     outputs = model(**inputs)
     scores = torch.nn.functional.softmax(outputs.logits, dim=1)
     sentiment = torch.argmax(scores).item()  # 0: Négatif, 1: Neutre, 2: Positif
