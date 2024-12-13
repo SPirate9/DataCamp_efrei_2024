@@ -127,7 +127,7 @@ def main():
         """)
     with tabs[1]:
         st.subheader("Dashboard Tableau")
-        st.write("Visualisez ici un tableau de bord Tableau intégré représentant l'analyse des notes Apple store & Play store.")
+        st.write("Visualisez ici un tableau de bord Tableau représentant l'analyse des sentiments des utilisateurs de Pokémon Pocket en s’appuyant sur les évaluations laissées sur les plateformes Apple et Play Store. En attribuant un score basé sur le nombre d’étoiles accordées, nous avons pu quantifier le ressenti des joueurs et l’intégrer à notre tableau de bord. Cette analyse est contextualisée selon plusieurs critères : la date des avis, la version de l’application, le pays, ainsi que la provenance des utilisateurs. Ces données permettent d’identifier les tendances de satisfaction ou d’insatisfaction.")
         # Code HTML du tableau Tableau Public
         tableau_html = """
     <div class='tableauPlaceholder' id='viz1733948073609' style='position: relative'>
