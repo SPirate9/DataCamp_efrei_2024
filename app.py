@@ -184,7 +184,7 @@ def main():
     
     with tabs[3]:
         st.subheader("Google Play & Apple Store (Logistic Regression)")
-        st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store (~109000 avis). La dernière colonne (notes_calculees) est la note qu'a calculé notre modèle de regression logistique. Ce modèle est légèrement moins efficaces que le modele roberta mais il est beaucoup plus rapide.")
+        st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store (~109000 avis). La dernière colonne (notes_calculees) est la note qu'a calculé notre modèle de regression logistique en fonction des commentaires. Ce modèle est légèrement moins efficaces que le modele roberta mais il est beaucoup plus rapide.")
         all_reviews_notees = pd.read_csv('data_source/all_reviews_notees 2.csv', sep=';')
         st.write("### Aperçu des avis notés :")
         st.dataframe(all_reviews_notees.drop(columns=["score"]))
