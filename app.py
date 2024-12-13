@@ -175,7 +175,7 @@ def main():
     
     with tabs[2]:
         st.subheader("Google Play & Apple Store (Roberta)")
-        st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store (~109000 avis). La dernière colonne (note) est la note calculée par notre modèle RoBERTa en fonction du sentiment détecté dans les avis. Ce modèle est plus précis pour l'analyse de sentiment que notre modèle de régression logistique, mais il peut être un peu plus lent en raison de sa taille et de sa complexité.")
+        st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store. La dernière colonne (note) est la note calculée par notre modèle RoBERTa en fonction du sentiment détecté dans les avis. Ce modèle est plus précis pour l'analyse de sentiment que notre modèle de régression logistique, mais il peut être un peu plus lent en raison de sa taille et de sa complexité.")
         all_reviews_notees = pd.read_csv('data_source/samples_roberta.csv', sep=';') 
         st.write("### Aperçu des avis notés :")
         st.dataframe(all_reviews_notees.dropna())
@@ -184,7 +184,7 @@ def main():
     
     with tabs[3]:
         st.subheader("Google Play & Apple Store (Logistic Regression)")
-        st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store (~109000 avis). La dernière colonne (note) est la note calculée par notre modèle RoBERTa en fonction du sentiment détecté dans les avis. Ce modèle est plus précis pour l'analyse de sentiment que notre modèle de régression logistique, mais il peut être un peu plus lent en raison de sa taille et de sa complexité.")
+        st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store (~109000 avis). La dernière colonne (notes_calculees) est la note qu'a calculé notre modèle de regression logistique. Ce modèle est légèrement moins efficaces que le modele roberta mais il est beaucoup plus rapide.")
         all_reviews_notees = pd.read_csv('data_source/all_reviews_notees 2.csv', sep=';')
         st.write("### Aperçu des avis notés :")
         st.dataframe(all_reviews_notees)
