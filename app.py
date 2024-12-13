@@ -194,8 +194,8 @@ def main():
     
     with tabs[4]:
         st.subheader("YouTube")
-        st.write("Analyse des commentaires de la vidéo YouTube spécifiée.")
-        
+        st.write("Extraction des commentaires de la vidéo officielle du jeu Pokémon sur YouTube. Les commentaires sont ensuite analysés à l'aide de RoBERTa.")
+
         if st.button("Analyser les Commentaires YouTube"):
             try:
                 comments = fetch_comments()  # Fetch comments for the predefined video ID
