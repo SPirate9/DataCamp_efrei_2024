@@ -148,6 +148,12 @@ def main():
                 st.error(f"Erreur lors de l'analyse : {e}")
     
     with tabs[5]:
+        st.subheader("Analyse de Sentiment")
+    
+    # Choix entre texte ou CSV
+    option = st.radio("Choisissez une option :", ["Texte", "Fichier CSV"], horizontal=True)
+    
+    if option == "Texte":
         st.subheader("Analyse de Sentiment Individuel")
         user_input = st.text_area("Saisissez un texte à analyser :")
         if st.button("Analyser le Sentiment"):
@@ -162,8 +168,8 @@ def main():
                 """)
             except Exception as e:
                 st.error(f"Erreur lors de l'analyse : {e}")
-
-        st.markdown("---")
+    
+    elif option == "Fichier CSV":
         st.subheader("Analyse de Fichier CSV")
         uploaded_file = st.file_uploader("Téléchargez un fichier CSV", type=["csv"])
         
