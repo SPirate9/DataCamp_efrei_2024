@@ -22,7 +22,7 @@ https://pokemon-comments-viewer.streamlit.app/
 ### Contenu du dossier compressé :
 
 - un fichier `Code_Webscraping_RegresisionLogistique.ipynb` sur le scraping des données et la création du modèle de régression logistique
-- un fichier `app.py` sur l'application streamlit, et sur le modèle ROBERTA
+- Un fichier `app.py pour une application Streamlit`, implémentant le scraping de vidéos YouTube et utilisant le modèle ROBERTA.
 - un dossier data_source contenant les fichiers d'entrées en csv
 
 ### Trois tableaux de bords :
