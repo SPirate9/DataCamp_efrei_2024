@@ -23,6 +23,7 @@ https://pokemon-comments-viewer.streamlit.app/
 
 - un fichier `Code_Webscraping_RegresisionLogistique.ipynb` sur le scraping des données et la création du modèle de régression logistique
 - un fichier `app.py` sur l'application streamlit, et sur le modèle ROBERTA
+- un dossier data_source contenant les fichiers d'entrées en csv
 
 ### Trois tableaux de bords :
 - un sur les notes données par les utilisateurs des avis applestore et playstore
