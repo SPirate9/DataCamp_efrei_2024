@@ -212,7 +212,7 @@ def main():
                 st.error(f"Erreur lors de l'analyse : {e}")
     
     with tabs[5]:
-        st.subheader("Analyse de Sentiment Individuel")
+        st.subheader("Analyse de Sentiment avec RoBERTa")
         user_input = st.text_area("Saisissez un texte à analyser :")
         if st.button("Analyser le Sentiment"):
             try:
