@@ -9,7 +9,7 @@ from googleapiclient.discovery import build
 import html
 import re
 
-# Global variables for model and tokenizer
+# Nom du modèle RoBERTa pré-entraîné utilisé pour l'analyse des sentiments.
 MODEL_NAME = "cardiffnlp/twitter-roberta-base-sentiment-latest"
 
 @st.cache_resource
