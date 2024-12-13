@@ -114,19 +114,41 @@ def main():
     
     with tabs[0]:
         st.subheader("Explications")
-        st.write("Bienvenue dans l'application d'analyse des sentiments. Naviguez à travers les onglets pour explorer les différentes fonctionnalités.")
-    
+        st.write("""
+        Ce projet vise à analyser les commentaires des utilisateurs sur plusieurs plateformes :
+        - **Google Play & Apple Store :** Analyse des avis laissés par les utilisateurs des applications mobiles.
+        - **Dashboard Tableau :** Un tableau de bord interactif pour regrouper et visualiser les données de manière dynamique.
+        - **YouTube :** Extraction et analyse des commentaires des vidéos YouTube sur Pokémon TCG Pocket.
+        - **Analyse de Sentiment :** Un onglet dédié à l'analyse de sentiment où vous pouvez soit saisir un texte pour analyse, soit télécharger un fichier CSV pour obtenir une analyse sur l'ensemble des commentaires présents dans ce fichier.
+         """)
+        st.write("""
+        Les données ont été extraites à l'aide de Python et visualisées avec **Streamlit**. 
+        Cette application permet ainsi une exploration interactive des commentaires utilisateurs sur diverses plateformes, avec un focus particulier sur l'analyse de sentiment via **Roberta**, un modèle de traitement du langage naturel.
+        """)
     with tabs[1]:
         st.subheader("Dashboard Tableau")
-        st.write("Fonctionnalité en développement.")
+        st.write("Visualisez ici un tableau de bord Tableau intégré représentant l'analyse des notes Apple store & Play store.")
+        # Code HTML du tableau Tableau Public
+        tableau_html = ""
+        st.components.v1.html(tableau_html, height=1500)
     
     with tabs[2]:
         st.subheader("Google Play & Apple Store (Roberta)")
-        st.write("Fonctionnalité en développement.")
+        st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store (~109000 avis). La dernière colonne (note) est la note calculée par notre modèle RoBERTa en fonction du sentiment détecté dans les avis. Ce modèle est plus précis pour l'analyse de sentiment que notre modèle de régression logistique, mais il peut être un peu plus lent en raison de sa taille et de sa complexité.")
+        all_reviews_notees = pd.read_csv('data_source/samples_roberta.csv', sep=';') 
+        st.write("### Aperçu des avis notés :")
+        st.dataframe(all_reviews_notees)
+        tableau_html = ""
+        st.components.v1.html(tableau_html, height=1500)
     
     with tabs[3]:
         st.subheader("Google Play & Apple Store (Logistic Regression)")
-        st.write("Fonctionnalité en développement.")
+        st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store (~109000 avis). La dernière colonne (note) est la note calculée par notre modèle RoBERTa en fonction du sentiment détecté dans les avis. Ce modèle est plus précis pour l'analyse de sentiment que notre modèle de régression logistique, mais il peut être un peu plus lent en raison de sa taille et de sa complexité.")
+        all_reviews_notees = pd.read_csv('data_source/samples_roberta.csv', sep=';')
+        st.write("### Aperçu des avis notés :")
+        st.dataframe(all_reviews_notees)
+        tableau_html = ""
+        st.components.v1.html(tableau_html, height=1500)
     
     with tabs[4]:
         st.subheader("YouTube")
@@ -148,56 +170,50 @@ def main():
                 st.error(f"Erreur lors de l'analyse : {e}")
     
     with tabs[5]:
-        st.subheader("Analyse de Sentiment")
-    
-        # Choix entre texte ou CSV
-        option = st.radio("Choisissez une option :", ["Texte", "Fichier CSV"], horizontal=True)
-    
-        if option == "Texte":
-            st.subheader("Analyse de Sentiment Individuel")
-            user_input = st.text_area("Saisissez un texte à analyser :")
-            if st.button("Analyser le Sentiment"):
-                try:
-                    result = analyze_sentiment(user_input)
-                    st.markdown(f"""
-                    ### Résultats de l'Analyse
-                    - **Texte analysé :** {user_input}
-                    - **Sentiment :** {result['sentiment']}
-                    - **Score de confiance :** {result['score']:.2f}
-                    - **Note sur 5 :** {result['note']}
-                    """)
-                except Exception as e:
-                    st.error(f"Erreur lors de l'analyse : {e}")
-    
-            elif option == "Fichier CSV":
-                st.subheader("Analyse de Fichier CSV")
-                uploaded_file = st.file_uploader("Téléchargez un fichier CSV", type=["csv"])
+        st.subheader("Analyse de Sentiment Individuel")
+        user_input = st.text_area("Saisissez un texte à analyser :")
+        if st.button("Analyser le Sentiment"):
+            try:
+                result = analyze_sentiment(user_input)
+                st.markdown(f"""
+                ### Résultats de l'Analyse
+                - **Texte analysé :** {user_input}
+                - **Sentiment :** {result['sentiment']}
+                - **Score de confiance :** {result['score']:.2f}
+                - **Note sur 5 :** {result['note']}
+                """)
+            except Exception as e:
+                st.error(f"Erreur lors de l'analyse : {e}")
+
+        st.markdown("---")
+        st.subheader("Analyse de Fichier CSV")
+        uploaded_file = st.file_uploader("Téléchargez un fichier CSV", type=["csv"])
         
-                if uploaded_file:
-                    df = pd.read_csv(uploaded_file)
-                    st.dataframe(df.head())
+        if uploaded_file:
+            df = pd.read_csv(uploaded_file)
+            st.dataframe(df.head())
             
-                    column = st.selectbox("Sélectionnez la colonne à analyser", df.columns)
+            column = st.selectbox("Sélectionnez la colonne à analyser", df.columns)
             
-                    if st.button("Analyser le Fichier CSV"):
-                        with st.spinner("Analyse en cours..."):
-                            try:
-                                results_df = analyze_comments_dataframe(df, column)
+            if st.button("Analyser le Fichier CSV"):
+                with st.spinner("Analyse en cours..."):
+                    try:
+                        results_df = analyze_comments_dataframe(df, column)
                         
-                                st.dataframe(results_df)
+                        st.dataframe(results_df)
                         
-                                # Download option
-                                st.download_button(
-                                    label="Télécharger les résultats",
-                                    data=results_df.to_csv(index=False).encode('utf-8'),
-                                    file_name="sentiment_analysis_results.csv",
-                                    mime="text/csv"
-                             )
+                        # Download option
+                        st.download_button(
+                            label="Télécharger les résultats",
+                            data=results_df.to_csv(index=False).encode('utf-8'),
+                            file_name="sentiment_analysis_results.csv",
+                            mime="text/csv"
+                        )
                         
-                                # Visualizations
-                                display_sentiment_visualizations(results_df)
-                            except Exception as e:
-                                st.error(f"Erreur lors de l'analyse : {e}")
+                        # Visualizations
+                        display_sentiment_visualizations(results_df)
+                    except Exception as e:
+                        st.error(f"Erreur lors de l'analyse : {e}")
 
 if __name__ == "__main__":
     main()
