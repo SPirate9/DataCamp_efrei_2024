@@ -175,7 +175,7 @@ def main():
     
     with tabs[2]:
         st.subheader("Google Play & Apple Store (Roberta)")
-        st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store. La dernière colonne (note) est la note calculée par notre modèle RoBERTa en fonction du sentiment détecté dans les avis. Ce modèle est plus précis pour l'analyse de sentiment que notre modèle de régression logistique, mais il peut être un peu plus lent en raison de sa taille et de sa complexité.")
+        st.write("Cet onglet affichera des informations récupérées sur Google Play et Apple Store. La dernière colonne (note) est la note calculée par notre modèle RoBERTa en fonction du sentiment détecté dans les avis. Ce modèle est plus précis pour l'analyse de sentiment que notre modèle de régression logistique, mais il peut être un peu plus lent en raison de sa taille et de sa complexité. En complément, un nuage de mots (WordCloud) sera généré à partir des mots les plus fréquemment utilisés dans les avis des utilisateurs. Cela permettra une visualisation rapide des thématiques récurrentes et des termes saillants exprimés dans les retours.")
         all_reviews_notees = pd.read_csv('data_source/samples_roberta.csv', sep=';') 
         st.write("### Aperçu des avis notés :")
         st.dataframe(all_reviews_notees.dropna())
