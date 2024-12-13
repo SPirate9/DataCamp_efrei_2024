@@ -150,54 +150,54 @@ def main():
     with tabs[5]:
         st.subheader("Analyse de Sentiment")
     
-    # Choix entre texte ou CSV
-    option = st.radio("Choisissez une option :", ["Texte", "Fichier CSV"], horizontal=True)
+        # Choix entre texte ou CSV
+        option = st.radio("Choisissez une option :", ["Texte", "Fichier CSV"], horizontal=True)
     
-    if option == "Texte":
-        st.subheader("Analyse de Sentiment Individuel")
-        user_input = st.text_area("Saisissez un texte à analyser :")
-        if st.button("Analyser le Sentiment"):
-            try:
-                result = analyze_sentiment(user_input)
-                st.markdown(f"""
-                ### Résultats de l'Analyse
-                - **Texte analysé :** {user_input}
-                - **Sentiment :** {result['sentiment']}
-                - **Score de confiance :** {result['score']:.2f}
-                - **Note sur 5 :** {result['note']}
-                """)
-            except Exception as e:
-                st.error(f"Erreur lors de l'analyse : {e}")
+        if option == "Texte":
+            st.subheader("Analyse de Sentiment Individuel")
+            user_input = st.text_area("Saisissez un texte à analyser :")
+            if st.button("Analyser le Sentiment"):
+                try:
+                    result = analyze_sentiment(user_input)
+                    st.markdown(f"""
+                    ### Résultats de l'Analyse
+                    - **Texte analysé :** {user_input}
+                    - **Sentiment :** {result['sentiment']}
+                    - **Score de confiance :** {result['score']:.2f}
+                    - **Note sur 5 :** {result['note']}
+                    """)
+                except Exception as e:
+                    st.error(f"Erreur lors de l'analyse : {e}")
     
-    elif option == "Fichier CSV":
-        st.subheader("Analyse de Fichier CSV")
-        uploaded_file = st.file_uploader("Téléchargez un fichier CSV", type=["csv"])
+            elif option == "Fichier CSV":
+                st.subheader("Analyse de Fichier CSV")
+                uploaded_file = st.file_uploader("Téléchargez un fichier CSV", type=["csv"])
         
-        if uploaded_file:
-            df = pd.read_csv(uploaded_file)
-            st.dataframe(df.head())
+                if uploaded_file:
+                    df = pd.read_csv(uploaded_file)
+                    st.dataframe(df.head())
             
-            column = st.selectbox("Sélectionnez la colonne à analyser", df.columns)
+                    column = st.selectbox("Sélectionnez la colonne à analyser", df.columns)
             
-            if st.button("Analyser le Fichier CSV"):
-                with st.spinner("Analyse en cours..."):
-                    try:
-                        results_df = analyze_comments_dataframe(df, column)
+                    if st.button("Analyser le Fichier CSV"):
+                        with st.spinner("Analyse en cours..."):
+                            try:
+                                results_df = analyze_comments_dataframe(df, column)
                         
-                        st.dataframe(results_df)
+                                st.dataframe(results_df)
                         
-                        # Download option
-                        st.download_button(
-                            label="Télécharger les résultats",
-                            data=results_df.to_csv(index=False).encode('utf-8'),
-                            file_name="sentiment_analysis_results.csv",
-                            mime="text/csv"
-                        )
+                                # Download option
+                                st.download_button(
+                                    label="Télécharger les résultats",
+                                    data=results_df.to_csv(index=False).encode('utf-8'),
+                                    file_name="sentiment_analysis_results.csv",
+                                    mime="text/csv"
+                             )
                         
-                        # Visualizations
-                        display_sentiment_visualizations(results_df)
-                    except Exception as e:
-                        st.error(f"Erreur lors de l'analyse : {e}")
+                                # Visualizations
+                                display_sentiment_visualizations(results_df)
+                            except Exception as e:
+                                st.error(f"Erreur lors de l'analyse : {e}")
 
 if __name__ == "__main__":
     main()
