@@ -214,18 +214,19 @@ def main():
     with tabs[5]:
         st.subheader("Analyse de Sentiment Individuel")
         user_input = st.text_area("Saisissez un texte à analyser :")
-        if st.button("Analyser le Sentiment"):
-            try:
-                result = analyze_sentiment(user_input)
-                st.markdown(f"""
-                ### Résultats de l'Analyse
-                - **Texte analysé :** {user_input}
-                - **Sentiment :** {result['sentiment']}
-                - **Score de confiance :** {result['score']:.2f}
-                - **Note sur 5 :** {result['note']}
-                """)
-            except Exception as e:
-                st.error(f"Erreur lors de l'analyse : {e}")
+        if user_input.strip():
+            if st.button("Analyser le Sentiment"):
+                try:
+                    result = analyze_sentiment(user_input)
+                    st.markdown(f"""
+                    ### Résultats de l'Analyse
+                    - **Texte analysé :** {user_input}
+                    - **Sentiment :** {result['sentiment']}
+                    - **Score de confiance :** {result['score']:.2f}
+                    - **Note sur 5 :** {result['note']}
+                    """)
+                except Exception as e:
+                    st.error(f"Erreur lors de l'analyse : {e}")
 
         st.markdown("---")
         st.subheader("Analyse de Fichier CSV")
